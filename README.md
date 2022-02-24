@@ -14,9 +14,20 @@ git submodule update --init --recursive
 ```
 
 ## Building microcontroller project
-````
+```
 mkdir build
 cd build
 cmake ..
 make
+```
+
+### Install python packages
+```bash
+pip install matplotlib
+pip install pandas
+```
+
+## Running client
+```bash
+python3 client/client.py
 ```

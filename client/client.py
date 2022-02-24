@@ -1,10 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
-from matplotlib import widgets
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
-from matplotlib.pyplot import xticks
 import pandas as pd
 
 deviceConnected = False
