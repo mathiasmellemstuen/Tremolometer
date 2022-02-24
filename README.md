@@ -1,2 +1,22 @@
 # Tremolometer
-Bacheloroppgave
+
+## Install (Mac)
+
+### Install compiler
+```bash
+brew tap ArmMbed/homebrew-formula
+brew install arm-none-eabi-gcc
+```
+
+### Pull submodules
+```bash
+git submodule update --init --recursive
+```
+
+## Building microcontroller project
+````
+mkdir build
+cd build
+cmake ..
+make
+```
