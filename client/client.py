@@ -6,13 +6,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import pandas as pd
 import serial.tools.list_ports
 
-comports = serial.tools.list_ports.comports()
-
-for port in comports:
-    print(port)
-
-deviceConnected = False
-
+device_was_connected = False
 # Window
 window = Tk()
 window.title("Tremolometer")
@@ -37,6 +31,15 @@ canvas.draw()
 widget = canvas.get_tk_widget()
 widget.grid(column=1, row=2, columnspan=11, sticky=W + E)
 
+def search_for_comport():
+
+    for port in serial.tools.list_ports.comports():
+        if "RaspberryPi Pico" in str(port.description):
+            return port
+    return None
+
+def check_if_device_is_connected():
+    return search_for_comport() is not None
 
 def data_to_csv_string():
     csvString = "\"Tid(s)\",\"Bevegelse (mm)\""
@@ -88,18 +91,30 @@ def disconnected_ui():
 
 
 def connected_ui():
-    pass
+    connectionLabel.configure(text="Tilkoblet")
+    connectionLabel.configure(foreground="green")
 
 
 def measuring_ui():
     pass
-
 
 def finished_ui():
     saveButton.grid(column=11, row=3, sticky="news", padx=20, pady=20)
 
 
 def update():
+    global device_was_connected
+
+    if check_if_device_is_connected():
+        device_was_connected = True
+        connected_ui()
+    else:
+        disconnected_ui()
+
+        if device_was_connected:
+            device_was_connected = False
+            messagebox.showwarning("Frakoblet", "Tremolometer ble frakoblet")
+
     canvas.draw()
     window.after(1, update)
 
