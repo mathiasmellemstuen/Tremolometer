@@ -4,7 +4,6 @@ from tkinter import filedialog
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import pandas as pd
-
 import serial.tools.list_ports
 
 comports = serial.tools.list_ports.comports()
@@ -53,37 +52,30 @@ def start():
     else:
         messagebox.showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
 
+def save_as():
+    f = filedialog.asksaveasfile(title="Lagre som", defaultextension=".csv", filetypes=[("CSV fil", "*.csv"), ("Excel fil", "*.xlsx")])
 
-def save_as_csv():
-    f = filedialog.asksaveasfile(title="Lagre som csv", defaultextension=".csv", filetypes=[("CSV fil", "*.csv")])
 
     if f is None:
         return
 
-    f.write(data_to_csv_string())
-    f.close()
-
-
-def save_as_xml():
-    f = filedialog.asksaveasfile(title="Lagre som XLSX", defaultextension=".xlsx", filetypes=[("Excel fil", "*.xlsx")])
-
-    if f is None:
-        return
-
-    path = f.name
-    f.close()
     dataFrame = pd.DataFrame(data, columns=['Tid(s)', 'Bevegelse (mm)'])
-    dataFrame.to_excel(path, index=False)
 
+    extension = f.name.split(".")[-1]
+
+    if extension == "csv":
+        dataFrame.to_csv(f.name)
+    else:
+        dataFrame.to_excel(f.name, index=False)
+
+    f.close()
 
 # Creating GUI objects
 frequencyLabel = Label(text="Frequency: --Hz", padx=10, pady=10, background="white", foreground="black", anchor="w")
 measureLabel = Label(text="Måling: 0 / 20 s", background="white", foreground="black", anchor="center")
 connectionLabel = Label(text="Tilkoblet", background="white", foreground="green", anchor="e", padx=25)
 startButton = Button(text="Start", padx=10, pady=10, background="white", foreground="black", command=start)
-saveCSVButton = Button(text="Lagre som csv", padx=10, pady=10, background="white", foreground="black", command=save_as_csv)
-saveXLSSButton = Button(text="Lagre som xlsx", padx=10, pady=10, background="white", foreground="black", command=save_as_xml)
-
+saveButton = Button(text="Lagre som", padx=10, pady=10, background="white", foreground="black", command=save_as)
 
 def disconnected_ui():
     connectionLabel.configure(text="Ikke tilkoblet")
@@ -104,8 +96,7 @@ def measuring_ui():
 
 
 def finished_ui():
-    saveCSVButton.grid(column=10, row=3, sticky="news", padx=20, pady=20)
-    saveXLSSButton.grid(column=11, row=3, sticky="news", padx=20, pady=20)
+    saveButton.grid(column=11, row=3, sticky="news", padx=20, pady=20)
 
 
 def update():

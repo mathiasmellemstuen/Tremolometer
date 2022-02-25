@@ -26,6 +26,7 @@ make
 pip install matplotlib
 pip install pandas
 pip install pyserial
+pip install openpyxl
 ```
 
 ## Running client
