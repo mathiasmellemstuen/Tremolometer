@@ -6,6 +6,31 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import pandas as pd
 import serial.tools.list_ports
 
+config = {}
+
+def split_yaml_line(line):
+    try:
+        left, right = line.split(": ")
+        return left, right
+    except:
+        try:
+            left, right = line.split(":")
+            return left, right
+        except:
+            return None, None
+
+def read_config():
+    with open("client/config.yaml") as file:
+        for line in file.readlines():
+            left, right = split_yaml_line(line)
+
+            if left is None or right is None:
+                continue
+
+            config[left] = int(right)
+
+read_config()
+
 device_was_connected = False
 # Window
 window = Tk()
@@ -21,8 +46,8 @@ plot.set_xlabel("Tid (s)")
 plot.set_ylabel("Bevegelse (mm)")
 plot.grid(color='gray', linestyle='dashed')
 plot.plot([element[0] for element in data], [element[1] for element in data], color=(1.0, 0.0, 0.0))
-plot.set_xticks(range(0, 21))
-plot.set_xlim([0, 20])
+plot.set_xticks(range(0, config["maaletid"] + 1))
+plot.set_xlim([0, config["maaletid"]])
 figure.tight_layout()
 
 canvas = FigureCanvasTkAgg(figure, master=window)
@@ -50,7 +75,7 @@ def data_to_csv_string():
 
 
 def start():
-    if deviceConnected:
+    if check_if_device_is_connected():
         measuring_ui()
     else:
         messagebox.showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
