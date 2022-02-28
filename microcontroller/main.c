@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+#include "bsp/board.h"
+#include "tusb.h"
 
 int main() {
     setup_default_uart();

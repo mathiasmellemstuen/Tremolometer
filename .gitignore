@@ -1,3 +1,5 @@
 .DS_STORE
 microcontroller/build
 .idea
+venv
+microcontroller/cmake-build-debug
