@@ -59,7 +59,8 @@ widget.grid(column=1, row=2, columnspan=11, sticky=W + E)
 def search_for_comport():
 
     for port in serial.tools.list_ports.comports():
-        if "RaspberryPi Pico" in str(port.description):
+        print(port)
+        if "Pico" in str(port.description):
             return port
     return None
 
