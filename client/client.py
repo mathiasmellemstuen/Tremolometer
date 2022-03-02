@@ -84,7 +84,7 @@ def start():
     if check_if_device_is_connected():
         comport = search_for_comport().name
         serialConnection = serial.Serial(port="/dev/" + comport)
-        print(serialConnection.write("hello"))
+        print(serialConnection.write("1"))
 
         measuring_ui()
     else:
