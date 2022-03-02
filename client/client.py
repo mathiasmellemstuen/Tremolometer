@@ -32,6 +32,9 @@ def read_config():
 read_config()
 
 device_was_connected = False
+comport = None
+serialConnection = None
+
 # Window
 window = Tk()
 window.title("Tremolometer")
@@ -56,10 +59,10 @@ canvas.draw()
 widget = canvas.get_tk_widget()
 widget.grid(column=1, row=2, columnspan=11, sticky=W + E)
 
+
 def search_for_comport():
 
     for port in serial.tools.list_ports.comports():
-        print(port)
         if "Pico" in str(port.description):
             return port
     return None
@@ -74,9 +77,15 @@ def data_to_csv_string():
 
     return csvString
 
-
 def start():
+    global comport
+    global serialConnection
+
     if check_if_device_is_connected():
+        comport = search_for_comport().name
+        serialConnection = serial.Serial(port="/dev/" + comport)
+        print(serialConnection.write("hello"))
+
         measuring_ui()
     else:
         messagebox.showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
