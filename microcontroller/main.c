@@ -1,5 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
 #include <stdio.h>
 #include <malloc.h>
 #include "pico/stdlib.h"
@@ -14,60 +12,60 @@ struct Data {
     int16_t x, y, z;
 };
 
-static inline void printData(Data d) {
-    printf("%c,%c,%c,%c\n", d.time, d.x, d.y, d.z);
+static inline void sendData(Data* data) {
+
+    unsigned char bytes[10];
+
+    bytes[0] = (data->time << 2 >> 24) & 0xFF;
+    bytes[1] = (data->time << 2 >> 16) & 0xFF;
+    bytes[2] = (data->time << 2 >> 8)  & 0xFF;
+    bytes[3] = data->time & 0xFF;
+    bytes[4] = (data->x >> 8) & 0xFF;
+    bytes[5] = data->x & 0xFF;
+    bytes[6] = (data->y >> 8) & 0xFF;
+    bytes[7] = data->y & 0xFF;
+    bytes[8] = (data->z >> 8) & 0xFF;
+    bytes[9] = data->z & 0xFF;
+
+    printf("%x%x%x%x%x%x%x%x%x%x", bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7], bytes[8], bytes[9]);
 }
 
-void createRunningLight() {
+void ledOn() {
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     gpio_put(PICO_DEFAULT_LED_PIN, 1);
 }
 
+void ledOff() {
+    gpio_put(PICO_DEFAULT_LED_PIN, 0);
+}
+
+void waitForStartSignal() {
+    while(getchar_timeout_us(10) != '1') {
+        stdio_init_all();
+        sleep_ms(100);
+    }
+}
+
 int main(void) {
     stdio_init_all();
-    createRunningLight();
+    stdio_flush();
+    ledOn();
 
-    sleep_ms(6000);
-
-    // printf("Allocate buffer\n");
     struct Data* buffer = malloc(sizeof(Data) * BUFFER_SIZE);
-
-    // printf("Fill buffer\n");
     for(int i = 0; i < BUFFER_SIZE; i++) {
-        buffer[i] = (Data) {4294967295, i+100, i+200, i+300};
+        buffer[i] = (Data) {1, 2, 3, 4};
     }
-    sleep_ms(3000);
 
-    // printf("Print buffer\n");
+    waitForStartSignal();
+
+    ledOff();
     for(int i = 0; i < BUFFER_SIZE; i++) {
         sleep_ms(100);
-        printData(buffer[i]);
+        sendData(buffer + i);
     }
-
-    // printf("%s", (const char *) buffer);
 
     sleep_ms(1000);
 
-    static char t = 68;
-    static char d = 0;
-
-    bool led = 0;
-
-    for (;;t++, d++) {
-        printf("Input\n");
-        char ui = getchar();
-        printf("char: %c\n", ui);
-
-        if (led) led = 0;
-        else led = 1;
-
-        if (ui == 49)
-            gpio_put(PICO_DEFAULT_LED_PIN, led);
-
-        // sleep_ms(500);
-    }
     return 0;
 }
-
-#pragma clang diagnostic pop

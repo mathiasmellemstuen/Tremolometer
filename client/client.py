@@ -41,7 +41,8 @@ window.title("Tremolometer")
 window.configure(bg="white")
 
 # List of tuples with x (s) and y (mm) elements
-data = [(1, 1), (2, 2), (3, 2.2), (4, 4), (5, 5)]
+# time (s) x-axis (mm) y-axis (mm) z-axis (mm)
+data = [(1, 1, 2, 3), (2, 4, 5, 6), (3, 7, 8, 9), (4, 10, 11, 12), (5, 13, 14, 15)]
 
 figure = Figure(figsize=(19, 5))
 plot = figure.add_subplot(111)
@@ -49,6 +50,8 @@ plot.set_xlabel("Tid (s)")
 plot.set_ylabel("Bevegelse (mm)")
 plot.grid(color='gray', linestyle='dashed')
 plot.plot([element[0] for element in data], [element[1] for element in data], color=(1.0, 0.0, 0.0))
+plot.plot([element[0] for element in data], [element[2] for element in data], color=(0.0, 1.0, 0.0))
+plot.plot([element[0] for element in data], [element[3] for element in data], color=(0.0, 0.0, 1.0))
 plot.set_xticks(range(0, config["maaletid"] + 1))
 plot.set_xlim([0, config["maaletid"]])
 figure.tight_layout()
@@ -77,14 +80,48 @@ def data_to_csv_string():
 
     return csvString
 
+# 10 bytes per Data
+
+def sendStartSignal():
+    global serialConnection
+    serialConnection.flush()
+
+    print("Sending starting signal")
+    serialConnection.write(b"1")
+
+def readFromSerialConnection():
+
+    global serialConnection
+    global data
+
+    if serialConnection is None:
+        return
+
+    if serialConnection.inWaiting() > 0:
+        bytes = serialConnection.read(10)
+
+        time = int.from_bytes(bytes[:3], byteorder="little", signed=False)
+        x = int.from_bytes(bytes[4:5], byteorder="little", signed=True)
+        y = int.from_bytes(bytes[6:7], byteorder="little", signed=True)
+        z = int.from_bytes(bytes[8:9], byteorder="little", signed=True)
+
+        print(f'Time: {time} x: {x} y: {y} z: {z}')
+
+        for byte in bytes:
+            print(bin(byte))
+
 def start():
     global comport
     global serialConnection
 
     if check_if_device_is_connected():
         comport = search_for_comport().name
+
+        print("Starting on com-port: ", comport)
         serialConnection = serial.Serial(port="/dev/" + comport)
-        print(serialConnection.write("1"))
+
+        print("Sending starting signal to Tremolometer")
+        sendStartSignal()
 
         measuring_ui()
     else:
@@ -143,6 +180,7 @@ def update():
     if check_if_device_is_connected():
         device_was_connected = True
         connected_ui()
+        readFromSerialConnection()
     else:
         disconnected_ui()
 
@@ -152,7 +190,6 @@ def update():
 
     canvas.draw()
     window.after(1, update)
-
 
 disconnected_ui()
 finished_ui()
