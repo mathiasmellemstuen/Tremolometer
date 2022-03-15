@@ -9,10 +9,10 @@ def split_yaml_line(line):
         except:
             return None, None
 
-def read_config():
+def read_config(path):
     config = {}
 
-    with open("client/config.yaml") as file:
+    with open(path) as file:
         for line in file.readlines():
             left, right = split_yaml_line(line)
 

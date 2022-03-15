@@ -3,3 +3,4 @@ microcontroller/build
 .idea
 venv
 microcontroller/cmake-build-debug
+client/__pycache__
