@@ -6,7 +6,7 @@ from tkinter.messagebox import showwarning
 from tkinter.filedialog import asksaveasfile
 
 #data = [(1, 1, 2, 3), (2, 4, 5, 6), (3, 7, 8, 9), (4, 10, 11, 12), (5, 13, 14, 15)]
-data = [(1,1,2,3)]
+data = []
 config = read_config("client/config.yaml")
 usb_communication = USBCommunication()
 interface = Interface(config)
@@ -54,6 +54,7 @@ def update():
             device_was_connected = False
             showwarning("Frakoblet", "Tremolometer ble frakoblet")
 
+    interface.window.after(1, update)
 
 interface.draw_plot(create_figure(data, config))
 interface.set_methods(start_button, save_as_button, update)

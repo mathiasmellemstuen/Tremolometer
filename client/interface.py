@@ -33,6 +33,11 @@ class Interface:
         self.connection_label.configure(text="Tilkoblet")
         self.connection_label.configure(foreground="green")
 
+        self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
+        self.frequency_label.grid(column=1, row=3, sticky="news", padx=20, pady=20)
+        self.measure_label.grid(column=6, row=1, sticky="news")
+        self.connection_label.grid(column=11, row=1, sticky="news")
+
     def finished_ui(self):
         self.save_button.grid(column=11, row=3, sticky="news", padx=20, pady=20)
 
@@ -43,7 +48,6 @@ class Interface:
         widget.grid(column=1, row=row, columnspan=11, sticky=W + E)
 
     def update(self):
-        self.window.after(1, self.update_method)
         self.update_method()
         self.window.mainloop()
 
