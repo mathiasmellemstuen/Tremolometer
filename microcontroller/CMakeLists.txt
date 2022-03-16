@@ -5,7 +5,7 @@ project(tremolometer)
 
 pico_sdk_init()
 
-add_executable(tremolometer main.c)
+add_executable(tremolometer main.c base64Encode.h base64Encode.c data.h usbTransfer.h usbTransfer.c led.c led.h)
 
 target_include_directories(tremolometer PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
