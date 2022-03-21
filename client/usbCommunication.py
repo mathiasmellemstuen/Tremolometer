@@ -9,9 +9,9 @@ class USBCommunication:
     def search_for_comport(self):
 
         for port in serial.tools.list_ports.comports():
-            if "COM4" in str(port.description):
+            if "Pico" in str(port.description):
                 if self.connection is None:
-                    self.connection = serial.Serial(port=port.name, parity=serial.PARITY_NONE, baudrate=9600)
+                    self.connection = serial.Serial(port= "/dev/" + port.name, parity=serial.PARITY_NONE)
                 return port
 
         self.connection = None
@@ -27,17 +27,18 @@ class USBCommunication:
 
     def read(self):
         if self.connection is None:
-            return
+            return None
+
         if self.connection.inWaiting() > 0:
-            input = self.connection.read(16)
+            input = self.connection.read(1336)
             bytes = base64.b64decode(input)
-            print(bytes)
+            data = []
 
-            time = int.from_bytes(bytes[0:4], byteorder="big", signed=False)
-            x = int.from_bytes(bytes[4:6], byteorder="big", signed=True)
-            y = int.from_bytes(bytes[6:8], byteorder="big", signed=True)
-            z = int.from_bytes(bytes[8:10], byteorder="big", signed=True)
-            print(f'Time: {time} x: {x} y: {y} z: {z}')
-            return time, x, y, z
-
-        return None, None, None, None
+            for i in range(100):
+                time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
+                x = int.from_bytes(bytes[10 * i + 4 : 10 * i + 6], byteorder="big", signed=True)
+                y = int.from_bytes(bytes[10 * i + 6 : 10 * i + 8], byteorder="big", signed=True)
+                z = int.from_bytes(bytes[10 * i + 8 : 10 * i + 10], byteorder="big", signed=True)
+                data.append((time, x, y, z))
+            return data
+        return None

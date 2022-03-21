@@ -4,31 +4,41 @@
 #include "data.h"
 #include "usbTransfer.h"
 #include "led.h"
+#include "time.h"
 
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 100
 
 int main(void) {
 
     usbInit();
     ledInit();
+
     setLed(true);
     waitForStartSignal();
+    timeInit();
+    setLed(false);
 
     struct Data* buffer = malloc(sizeof(struct Data) * BUFFER_SIZE);
-    buffer[0] = (struct Data){0, 1, 2, 3};
 
-    while(1) {
-        setLed(false);
-        sleep_ms(500);
+    int i = 0;
+    int j = 0;
 
-        buffer[0].time = buffer[0].time + 1;
-        buffer[0].x = 100 * sin((double)buffer[0].time);
-        buffer[0].y = 100 * cos((double)buffer[0].time);
+    while(true) {
 
-        sendData(buffer, BUFFER_SIZE);
+        buffer[i].time = timeSinceStart();
+        buffer[i].x = 100 * sin((double)j/10.0f);
+        buffer[i].y = 100 * cos((double)j/10.0f);
+        buffer[i].z = 100 * cos(M_PI / 4 + (double)j/10.0f);
 
-        setLed(true);
-        sleep_ms(500);
+        sleep_ms(10);
+
+        if(i == BUFFER_SIZE - 1) {
+            sendData(buffer, BUFFER_SIZE);
+            i = 0;
+            continue;
+        }
+        i += 1;
+        j += 1;
     }
 
     return 0;
