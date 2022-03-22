@@ -3,6 +3,7 @@ from config import read_config
 from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning
 from tkinter.filedialog import asksaveasfile
+import pandas as pd
 
 data = []
 config = read_config("client/config.yaml")
