@@ -5,6 +5,12 @@
 #include "base64Encode.h"
 #include <malloc.h>
 
+
+/*
+ *  Hentet fra:
+ *
+ *  https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
+ */
 char* encode(const unsigned char* data, size_t inputLength, size_t* outputLength) {
 
     *outputLength = 4 * ((inputLength + 2) / 3);

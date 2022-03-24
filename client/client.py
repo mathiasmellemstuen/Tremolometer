@@ -1,11 +1,10 @@
-import pandas as pd
-from interface import Interface, create_figure
+from interface import Interface
 from config import read_config
 from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning
 from tkinter.filedialog import asksaveasfile
+import pandas as pd
 
-#data = [(1, 1, 2, 3), (2, 4, 5, 6), (3, 7, 8, 9), (4, 10, 11, 12), (5, 13, 14, 15)]
 data = []
 config = read_config("client/config.yaml")
 usb_communication = USBCommunication()
@@ -37,16 +36,19 @@ def save_as_button():
 
 def update():
     global device_was_connected
+    global data
 
     if usb_communication.check_if_device_is_connected():
         device_was_connected = True
         interface.connected_ui()
-        time, x, y, z = usb_communication.read()
 
-        if time is not None:
-            data.append((time, x, y, z))
-            interface.draw_plot(create_figure(data, config))
 
+        new_data = usb_communication.read()
+
+        if new_data is not None:
+            data.extend(new_data)
+
+        interface.draw_data(data)
     else:
         interface.disconnected_ui()
 
@@ -56,6 +58,6 @@ def update():
 
     interface.window.after(1, update)
 
-interface.draw_plot(create_figure(data, config))
+interface.draw_data(data)
 interface.set_methods(start_button, save_as_button, update)
 interface.update()
