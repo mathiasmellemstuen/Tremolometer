@@ -26,19 +26,24 @@ int main(void) {
 
     initAccel(i2c);
 
-    // Wait before taking measurements
-    sleep_ms(2000);
+    ledRGBInit();
+    ledRGBSet(0, 1, 1);
 
-    // waitForStartSignal();
+    struct Data accelData;
+
+    // Wait before taking measurements
+    waitForStartSignal();
+
+    gpio_put(18, 1);
 
     while(1) {
-        struct Data accelData = {
-                time_us_32(),
-                readData(i2c, OUT_X_L),
-                readData(i2c, OUT_Y_L),
-                readData(i2c, OUT_Z_L)
-        };
+        ledRGBSet(1, 0, 1);
+        accelData.time = time_us_32();
+        accelData.time = readData(i2c, OUT_X_L);
+        accelData.time = readData(i2c, OUT_Y_L);
+        accelData.time = readData(i2c, OUT_Z_L);
 
+        ledRGBSet(1, 1, 0);
         sendData(&accelData, 1);
 
         sleep_ms(500);

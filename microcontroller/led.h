@@ -7,6 +7,13 @@
 
 #include <stdbool.h>
 
+static const int LED_R = 18;
+static const int LED_G = 19;
+static const int LED_B = 20;
+
 void ledInit();
 void setLed(bool on);
+
+void ledRGBInit();
+void ledRGBSet(bool rOff, bool gOff, bool bOff);
 #endif //TREMOLOMETER_LED_H

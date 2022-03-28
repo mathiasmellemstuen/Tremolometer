@@ -28,7 +28,7 @@ void initAccel(i2c_inst_t *i2c) {
 
     // Turn self test
     buf[0] = CTRL_REG4;
-    buf[1] = 0x02;
+    buf[1] = 0x0A;
     i2c_write_blocking(i2c, ADDRESS, buf, 2, false);
 }
 
@@ -66,6 +66,9 @@ int readReg(i2c_inst_t *i2c, const uint8_t reg, uint8_t *buff, const uint8_t nby
 }
 
 int16_t readData(i2c_inst_t *i2c, uint8_t reg) {
+    // TODO: Check STATUS_REG (ZYXDA(5)) that there is new data.
+
+
     // Read two bytes of data and store in a 16 bit data structure
     uint8_t lsb;
     uint8_t msb;
