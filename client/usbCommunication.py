@@ -1,10 +1,12 @@
 import serial.tools.list_ports
 import serial
 import base64
+import config
 
 class USBCommunication:
     def __init__(self):
         self.connection = None
+        self.config = config.read_config("client/config.yaml")
 
     def search_for_comport(self):
 
@@ -23,7 +25,7 @@ class USBCommunication:
 
     def send_start_signal(self):
         self.connection.flush()
-        self.connection.write(b"1")
+        self.connection.write(str(self.config["maaletid"]))
 
     def read(self):
         if self.connection is None:
