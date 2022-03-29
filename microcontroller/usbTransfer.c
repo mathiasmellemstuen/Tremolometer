@@ -43,9 +43,15 @@ void sendData(struct Data* data, int n) {
     free(result);
 }
 
-void waitForStartSignal() {
-    while(getchar_timeout_us(0) != '1') {
-        stdio_init_all();
-        sleep_ms(WAIT_FOR_START_SIGNAL_INTERVAL_TIME_MS);
+int waitForStartSignal() {
+    int inn;
+    // Wait for a message from GUI
+    for (inn = -1; inn == PICO_ERROR_TIMEOUT; inn = getchar_timeout_us(0)) {}
+
+    for (int next = 0; next != PICO_ERROR_TIMEOUT; next = getchar_timeout_us(0)) {
+        inn *= 10;
+        inn += next;
     }
+
+    return inn;
 }

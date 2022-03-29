@@ -11,6 +11,11 @@
 
 void usbInit();
 void sendData(struct Data* data, int n);
-void waitForStartSignal();
+int waitForStartSignal();
+
+/* Procedure:
+ * 1. Get measuring time (ms) form GUI
+ * 2. Send package size to GUI
+ */
 
 #endif //TREMOLOMETER_USBTRANSFER_H
