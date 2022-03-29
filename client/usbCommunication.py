@@ -25,7 +25,7 @@ class USBCommunication:
 
     def send_start_signal(self):
         self.connection.flush()
-        self.connection.write(str(self.config["maaletid"]))
+        self.connection.write(self.config["maaletid"].to_bytes(2, "big"))
 
     def read(self):
         if self.connection is None:
