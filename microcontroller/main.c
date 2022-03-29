@@ -7,6 +7,7 @@
 #include "accelerometer.h"
 #include "data.h"
 #include "usbTransfer.h"
+#include "time.h"
 
 i2c_inst_t *i2c;
 
@@ -32,21 +33,24 @@ int main(void) {
     struct Data accelData;
 
     // Wait before taking measurements
+    // sleep_ms(5000);
     waitForStartSignal();
 
     gpio_put(18, 1);
 
+    startTime = to_ms_since_boot(get_absolute_time());
+
     while(1) {
         ledRGBSet(1, 0, 1);
-        accelData.time = time_us_32();
-        accelData.time = readData(i2c, OUT_X_L);
-        accelData.time = readData(i2c, OUT_Y_L);
-        accelData.time = readData(i2c, OUT_Z_L);
+        accelData.time = to_ms_since_boot(get_absolute_time()) - startTime;
+        accelData.x = readData(i2c, OUT_X_L);
+        accelData.y = readData(i2c, OUT_Y_L);
+        accelData.z = readData(i2c, OUT_Z_L);
 
         ledRGBSet(1, 1, 0);
         sendData(&accelData, 1);
 
-        sleep_ms(500);
+        sleep_ms(50);
     }
 
     return 0;

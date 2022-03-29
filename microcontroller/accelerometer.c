@@ -28,7 +28,9 @@ void initAccel(i2c_inst_t *i2c) {
 
     // Turn self test
     buf[0] = CTRL_REG4;
-    buf[1] = 0x0A;
+    buf[1] = 0x0A;      // self test 1
+    // buf[1] = 0x0C;      // self test 2
+    // buf[1] = 0x4;       // No self test
     i2c_write_blocking(i2c, ADDRESS, buf, 2, false);
 }
 
