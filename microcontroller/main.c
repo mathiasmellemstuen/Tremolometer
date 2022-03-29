@@ -34,7 +34,9 @@ int main(void) {
 
     // Wait before taking measurements
     // sleep_ms(5000);
-    waitForStartSignal();
+    int i = waitForStartSignal();
+
+    ledRGBSet(1,0,1);
 
     gpio_put(18, 1);
 
@@ -43,7 +45,8 @@ int main(void) {
     while(1) {
         ledRGBSet(1, 0, 1);
         accelData.time = to_ms_since_boot(get_absolute_time()) - startTime;
-        accelData.x = readData(i2c, OUT_X_L);
+        // accelData.x = readData(i2c, OUT_X_L);
+        accelData.x = i;
         accelData.y = readData(i2c, OUT_Y_L);
         accelData.z = readData(i2c, OUT_Z_L);
 
