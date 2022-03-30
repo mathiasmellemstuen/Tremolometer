@@ -55,7 +55,9 @@ class Interface:
         self.connection_label.grid(column=11, row=1, sticky="news")
 
     def finished_ui(self):
-        self.save_button.grid(column=11, row=3, sticky="news", padx=20, pady=20)
+        self.save_button.grid(column=2, row=1, sticky="news", padx=20, pady=20)
+        self.start_button.configure(text="Start ny måling")
+        self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
 
     def draw_data(self, data):
 

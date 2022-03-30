@@ -8,12 +8,11 @@
 #include "data.h"
 #include "usbTransfer.h"
 #include "time.h"
+#include <malloc.h>
 
 i2c_inst_t *i2c;
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
-
+#define BUFFER_SIZE 100
 int main(void) {
     // Init USB stuff
     usbInit();
@@ -30,32 +29,48 @@ int main(void) {
     ledRGBInit();
     ledRGBSet(0, 1, 1);
 
-    struct Data accelData;
+    struct Data* dataBuffer = malloc(sizeof(struct Data) * BUFFER_SIZE);
 
     // Wait before taking measurements
     // sleep_ms(5000);
-    int16_t ii = waitForStartSignal();
+    int16_t maxRunningTime = waitForStartSignal();
 
     ledRGBSet(1,0,1);
 
     gpio_put(18, 1);
 
-    startTime = to_ms_since_boot(get_absolute_time());
+    timeInit();
+
+    uint16_t allocationIndex = 0;
 
     while(1) {
+        uint32_t currentTime = timeSinceStart();
+
+        // Restarts the algorithm if the time has exceeded maxRunningTime
+        if(maxRunningTime < currentTime) {
+
+            maxRunningTime = waitForStartSignal();
+            timeInit();
+            continue;
+        }
+
         ledRGBSet(1, 0, 1);
-        accelData.time = to_ms_since_boot(get_absolute_time()) - startTime;
-        // accelData.x = readData(i2c, OUT_X_L);
-        accelData.x = ii;
-        accelData.y = readData(i2c, OUT_Y_L);
-        accelData.z = readData(i2c, OUT_Z_L);
+
+        dataBuffer[allocationIndex].time = currentTime;
+        dataBuffer[allocationIndex].x = readData(i2c, OUT_X_L);
+        dataBuffer[allocationIndex].y = readData(i2c, OUT_Y_L);
+        dataBuffer[allocationIndex].z = readData(i2c, OUT_Z_L);
+        allocationIndex++;
 
         ledRGBSet(1, 1, 0);
-        sendData(&accelData, 1);
+
+        if(allocationIndex >= BUFFER_SIZE) {
+            sendData(dataBuffer, BUFFER_SIZE);
+            allocationIndex = 0;
+        }
 
         sleep_ms(50);
     }
 
     return 0;
 }
-#pragma clang diagnostic pop

@@ -32,11 +32,11 @@ class USBCommunication:
             return None
 
         if self.connection.inWaiting() > 0:
-            input = self.connection.read(16)
+            input = self.connection.read(136)
             bytes = base64.b64decode(input)
             data = []
 
-            for i in range(1):
+            for i in range(100):
                 time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
                 x = int.from_bytes(bytes[10 * i + 4 : 10 * i + 6], byteorder="big", signed=True)
                 y = int.from_bytes(bytes[10 * i + 6 : 10 * i + 8], byteorder="big", signed=True)
