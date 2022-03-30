@@ -6,6 +6,7 @@
 #include "base64Encode.h"
 #include <stdio.h>
 #include <malloc.h>
+#include <stdlib.h>
 
 void usbInit() {
     stdio_init_all();
@@ -43,15 +44,20 @@ void sendData(struct Data* data, int n) {
     free(result);
 }
 
-int waitForStartSignal() {
+int16_t waitForStartSignal() {
     int inn;
     // Wait for a message from GUI
     for (inn = -1; inn == PICO_ERROR_TIMEOUT; inn = getchar_timeout_us(0)) {}
+    // Convert last input (from stdio) to an int
+    inn -= 48;
 
-    for (int next = 0; next != PICO_ERROR_TIMEOUT; next = getchar_timeout_us(0)) {
+    // Convert message form GUI to an int
+    for (int next = getchar_timeout_us(0); next != PICO_ERROR_TIMEOUT; next = getchar_timeout_us(0)) {
+        // Add next number to the inn var
         inn *= 10;
-        inn += next;
+        inn += (next - 48);
     }
 
+    // Return measuring time (in ms)
     return inn;
 }

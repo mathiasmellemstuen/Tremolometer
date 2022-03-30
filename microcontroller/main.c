@@ -34,7 +34,7 @@ int main(void) {
 
     // Wait before taking measurements
     // sleep_ms(5000);
-    int i = waitForStartSignal();
+    int16_t ii = waitForStartSignal();
 
     ledRGBSet(1,0,1);
 
@@ -46,7 +46,7 @@ int main(void) {
         ledRGBSet(1, 0, 1);
         accelData.time = to_ms_since_boot(get_absolute_time()) - startTime;
         // accelData.x = readData(i2c, OUT_X_L);
-        accelData.x = i;
+        accelData.x = ii;
         accelData.y = readData(i2c, OUT_Y_L);
         accelData.z = readData(i2c, OUT_Z_L);
 

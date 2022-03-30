@@ -11,7 +11,7 @@
 
 void usbInit();
 void sendData(struct Data* data, int n);
-int waitForStartSignal();
+int16_t waitForStartSignal();
 
 /* Procedure:
  * 1. Get measuring time (ms) form GUI
