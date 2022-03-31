@@ -8,6 +8,7 @@
 #include "pico.h"
 
 static uint32_t startTime;
+static uint32_t endTime;
 
 void timeInit();
 uint32_t timeSinceStart();

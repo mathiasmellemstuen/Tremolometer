@@ -9,7 +9,7 @@ add_executable(tremolometer time.h time.c base64Encode.h base64Encode.c data.h u
 
 target_include_directories(tremolometer PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
-target_link_libraries(tremolometer pico_stdlib hardware_i2c)
+target_link_libraries(tremolometer pico_stdlib hardware_i2c pico_multicore)
 
 pico_enable_stdio_usb(tremolometer 1)
 pico_enable_stdio_uart(tremolometer 0)
