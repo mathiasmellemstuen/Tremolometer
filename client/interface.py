@@ -9,7 +9,6 @@ class Interface:
         self.window.title("Tremolometer")
         self.window.configure(bg="white")
         self.start_button = None
-        self.save_button = None
         self.update_method = None
         self.frequency_graph_header = Label(text="Frekvens over tid", background="white", foreground="black", anchor="center")
         self.frequency_label = Label(text="Gjennomsnittlig frekvens: --Hz", padx=10, pady=10, background="white", foreground="black", anchor="w")
@@ -23,15 +22,8 @@ class Interface:
         # For graph plotting frequency over time
         self.frequency_figure, self.frequency_plot, self.frequency_canvas, self.frequency_widget = self.create_graph(4, "Tid (s)", "Frekvens (Hz)")
 
-    def graph_mouse_move(self, event):
-        if event.inaxes:
-            pass
-            # event.inaxes.plot(event.xdata, 0, event.xdata, 10000)
-            # event.inaxes.plot(0, event.inaxes.get_y_lim(), event.xdata, event.inaxes.get_y_lim())
-
-    def set_methods(self, start_method, save_as_method, update_method):
+    def set_methods(self, start_method, update_method):
         self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black", command=start_method)
-        self.save_button = Button(text="Lagre som", padx=10, pady=10, background="white", foreground="black", command=save_as_method)
         self.update_method = update_method
 
     def disconnected_ui(self):
@@ -55,7 +47,6 @@ class Interface:
         self.connection_label.grid(column=11, row=1, sticky="news")
 
     def finished_ui(self):
-        self.save_button.grid(column=2, row=1, sticky="news", padx=20, pady=20)
         self.start_button.configure(text="Start ny måling")
         self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
 
@@ -94,7 +85,6 @@ class Interface:
         figure.tight_layout()
 
         canvas = FigureCanvasTkAgg(figure, master=self.window)
-        canvas.mpl_connect('motion_notify_event', self.graph_mouse_move)
         widget = canvas.get_tk_widget()
         widget.grid(column=1, row=row, columnspan=11, sticky=W + E)
 

@@ -2,8 +2,6 @@ from interface import Interface
 from config import read_config
 from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning
-from tkinter.filedialog import asksaveasfile
-import pandas as pd
 from timer import get_current_time_ms
 import threading
 
@@ -14,7 +12,7 @@ interface = Interface(config)
 device_was_connected = False
 measuring = False
 start_time = None
-
+run_usb_thread = True
 
 def start_button():
     global start_time
@@ -28,27 +26,8 @@ def start_button():
         showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
 
 
-def save_as_button():
-    f = asksaveasfile(title="Lagre som", defaultextension=".csv",
-                      filetypes=[("CSV fil", "*.csv"), ("Excel fil", "*.xlsx")])
-
-    if f is None:
-        return
-
-    dataFrame = pd.DataFrame(data, columns=['Tid(s)', 'Bevegelse (mm)'])
-
-    extension = f.name.split(".")[-1]
-
-    if extension == "csv":
-        dataFrame.to_csv(f.name)
-    else:
-        dataFrame.to_excel(f.name, index=False)
-
-    f.close()
-
-
 def usb_thread():
-    while True:
+    while run_usb_thread:
         if usb_communication.check_if_device_is_connected():
 
             if measuring:
@@ -88,9 +67,21 @@ def update():
     interface.window.after(1, update)
 
 
+
 usb_thread = threading.Thread(target=usb_thread)
 usb_thread.start()
 
+def on_exit():
+    global run_usb_thread
+
+    run_usb_thread = False
+
+    if usb_communication.connection is not None:
+        usb_communication.connection.close()
+
+    interface.window.destroy()
+
+interface.window.protocol("WM_DELETE_WINDOW", on_exit)
 interface.draw_data(data)
-interface.set_methods(start_button, save_as_button, update)
+interface.set_methods(start_button, update)
 interface.update()
