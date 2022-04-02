@@ -1,15 +1,13 @@
-#include <sys/cdefs.h>
-#include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "hardware/sync.h"
 #include "pico/multicore.h"
-
 #include "led.h"
 #include "accelerometer.h"
 #include "data.h"
 #include "usbTransfer.h"
 #include "time.h"
+#include "tremolometerState.h"
 #include <malloc.h>
 
 #pragma clang diagnostic push

@@ -22,7 +22,7 @@ void sendData(struct Data* data, int n) {
 
         bytes[0 + (DATA_STRUCT_SIZE * i)] = data[i].time >> 24;
         bytes[1 + (DATA_STRUCT_SIZE * i)] = data[i].time >> 16;
-        bytes[2 + (DATA_STRUCT_SIZE * i)] = data[i].time  >> 8;
+        bytes[2 + (DATA_STRUCT_SIZE * i)] = data[i].time >> 8;
         bytes[3 + (DATA_STRUCT_SIZE * i)] = data[i].time;
         bytes[4 + (DATA_STRUCT_SIZE * i)] = data[i].x >> 8;
         bytes[5 + (DATA_STRUCT_SIZE * i)] = data[i].x;
@@ -60,4 +60,16 @@ int16_t waitForStartSignal() {
 
     // Return measuring time (in ms)
     return inn;
+}
+void waitForHandshake() {
+
+    char in = 0x00;
+
+    while(in != '1') {
+        stdio_init_all();
+        in = getchar_timeout_us(200 * 1000);
+    }
+    printf("2");
+    fflush(stdout);
+    fflush(stdin);
 }

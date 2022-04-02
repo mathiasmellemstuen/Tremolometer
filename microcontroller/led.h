@@ -15,6 +15,5 @@ void ledInit();
 void setLed(bool on);
 
 void ledRGBInit();
-void ledRGBSet(bool rOff, bool gOff, bool bOff);
-
+void ledRGBSet(bool rOn, bool gOn, bool bOn);
 #endif //TREMOLOMETER_LED_H
