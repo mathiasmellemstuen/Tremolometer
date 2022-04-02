@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+#include "hardware/sync.h"
 #include "pico/multicore.h"
 
 #include "led.h"
@@ -11,74 +12,99 @@
 #include "time.h"
 #include <malloc.h>
 
-i2c_inst_t *i2c;
-struct Data accelData;
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
-void main2() {
+#define BUFFER_SIZE 100
+#define LOCK_DATA 24
+#define LOCK_SEND 25
+i2c_inst_t* i2c;
 
+struct Data data0[BUFFER_SIZE];
+struct Data data1[BUFFER_SIZE];
+
+struct Data* dataP;
+struct Data* dataS;
+uint8_t dataSize, bufferInUse;
+uint8_t *i;
+
+bool wait, waitData;
+
+void main2() {
+    uint8_t size = 0;
+
+    printf("Core 2: init\n");
+    while (1) {
+
+        // Wait for buffer to fill
+        if (dataSize <= 90)
+            continue;
+
+        printf("Core 2: Start\n");
+
+        wait = true;
+        // Calc new buffer
+        bufferInUse = (bufferInUse + 1) % 2;
+        size = dataSize;
+        dataSize = 0;
+
+        if (bufferInUse == 0)
+            dataP = data0;
+        else if (bufferInUse == 1)
+            dataP = data1;
+        i = 0;
+        wait = false;
+
+        if (bufferInUse == 0)
+            dataS = data1;
+        else if (bufferInUse == 1)
+            dataS = data0;
+
+        sendData(dataS, size);
+        size = 0;
+
+        printf("Core 2: end\n");
+    }
 }
 
-#define BUFFER_SIZE 100
 int main(void) {
-    // Start second core (core 1)
-    multicore_launch_core1(main2);
-
-    // Init USB stuff
+    // Init stuff
     usbInit();
-
-    // Init serial
     stdio_init_all();
+    ledRGBInit();
 
-    // Init I2C port
     i2c = i2c1;
     i2c_init(i2c, 400 * 1000);
-
     initAccel(i2c);
 
-    ledRGBInit();
-    ledRGBSet(0, 1, 1);
+    dataP = data0;
+    bufferInUse = 0;
+    wait = false;
 
-    struct Data* dataBuffer = malloc(sizeof(struct Data) * BUFFER_SIZE);
+    sleep_ms(5000);
+    printf("Core 1: init\n");
 
-    // Wait before taking measurements
-    // sleep_ms(5000);
-    int16_t ii = waitForStartSignal();
-
-    ledRGBSet(1,0,1);
-
-    gpio_put(18, 1);
+    multicore_launch_core1(main2);
 
     timeInit();
-    endTime = (startTime - startTime) + ii;
-
-    for (uint32_t time = timeSinceStart(); time <= endTime; time = timeSinceStart()) {
-        ledRGBSet(1, 0, 1);
-        accelData.time = to_ms_since_boot(get_absolute_time()) - startTime;
-        // accelData.x = readData(i2c, OUT_X_L);
-        accelData.x = ii;
-        accelData.y = readData(i2c, OUT_Y_L);
-        accelData.z = readData(i2c, OUT_Z_L);
-
-        dataBuffer[allocationIndex].time = currentTime;
-        dataBuffer[allocationIndex].x = readData(i2c, OUT_X_L);
-        dataBuffer[allocationIndex].y = readData(i2c, OUT_Y_L);
-        dataBuffer[allocationIndex].z = readData(i2c, OUT_Z_L);
-        allocationIndex++;
-
-        ledRGBSet(1, 1, 0);
-
-        if(allocationIndex >= BUFFER_SIZE) {
-            sendData(dataBuffer, BUFFER_SIZE);
-            allocationIndex = 0;
+    while (1) {
+        if (wait) {
+            printf("Core 1: wait\n");
+            continue;
         }
+
+        dataP[*i].time = timeSinceStart();
+        dataP[*i].x = readData(i2c, OUT_X_L);
+        dataP[*i].y = readData(i2c, OUT_Y_L);
+        dataP[*i].z = readData(i2c, OUT_Z_L);
+
+        dataSize++;
+        i++;
+
+        printf("core 1: %i\n", dataSize);
 
         sleep_ms(50);
     }
-
-    ledRGBSet(0, 1, 0);
 
     return 0;
 }
