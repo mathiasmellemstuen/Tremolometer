@@ -1,0 +1,13 @@
+//
+// Created by Mathias on 31/03/2022.
+//
+
+#ifndef TREMOLOMETER_TREMOLOMETERSTATE_H
+#define TREMOLOMETER_TREMOLOMETERSTATE_H
+
+enum TremolometerState {
+        IDLE=1,
+        BUFFER_FILLING=2,
+        BUFFER_FULL=3
+};
+#endif //TREMOLOMETER_TREMOLOMETERSTATE_H

@@ -1,3 +1,5 @@
+import time
+
 import serial.tools.list_ports
 import serial
 import base64
@@ -9,19 +11,33 @@ class USBCommunication:
         self.config = config.read_config("client/config.yaml")
 
     def search_for_comport(self):
-
         for port in serial.tools.list_ports.comports():
-            if "Pico" in str(port.description):
-                if self.connection is None:
-                    self.connection = serial.Serial(port= "/dev/" + port.name, parity=serial.PARITY_NONE)
-                return port
+            try:
+                temp_connection = serial.Serial(port="/dev/" + port.name, parity=serial.PARITY_NONE, timeout=1)
+                time.sleep(0.1)
+                temp_connection.flush()
+                temp_connection.write("1".encode())
+                time.sleep(0.1)
+                input = temp_connection.read(temp_connection.inWaiting())
 
-        self.connection = None
+                if input == b'':
+                    temp_connection.close()
+                    continue
+
+                if input == b'2':
+                    self.connection = temp_connection
+                    return port
+
+                temp_connection.close()
+
+            except Exception as e:
+                print(e)
+                continue
 
         return None
 
     def check_if_device_is_connected(self):
-        return self.search_for_comport() is not None
+        return self.connection is not None
 
     def send_start_signal(self):
         self.connection.flush()
