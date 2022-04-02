@@ -1,17 +1,12 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-#include "hardware/sync.h"
 #include "pico/multicore.h"
 #include "led.h"
 #include "accelerometer.h"
 #include "data.h"
 #include "usbTransfer.h"
 #include "time.h"
-#include "tremolometerState.h"
-#include <malloc.h>
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
+#include <stdio.h>
 
 #define BUFFER_SIZE 100
 #define LOCK_DATA 24
@@ -21,45 +16,39 @@ i2c_inst_t* i2c;
 struct Data data0[BUFFER_SIZE];
 struct Data data1[BUFFER_SIZE];
 
-struct Data* dataP;
-struct Data* dataS;
-uint8_t dataSize, bufferInUse;
-uint8_t *i;
+struct Data* sensorData;
+struct Data* sendingData;
+uint8_t bufferInUse;
+uint8_t i;
 
-bool wait, waitData;
+bool waitData, fullBuffer;
 
 void main2() {
-    uint8_t size = 0;
 
     printf("Core 2: init\n");
     while (1) {
 
-        // Wait for buffer to fill
-        if (dataSize <= 90)
-            continue;
+        multicore_fifo_pop_blocking();
 
         printf("Core 2: Start\n");
 
-        wait = true;
         // Calc new buffer
         bufferInUse = (bufferInUse + 1) % 2;
-        size = dataSize;
-        dataSize = 0;
 
         if (bufferInUse == 0)
-            dataP = data0;
+            sensorData = data0;
         else if (bufferInUse == 1)
-            dataP = data1;
-        i = 0;
-        wait = false;
+            sensorData = data1;
+
+        multicore_fifo_push_blocking(0);
 
         if (bufferInUse == 0)
-            dataS = data1;
+            sendingData = data1;
         else if (bufferInUse == 1)
-            dataS = data0;
+            sendingData = data0;
 
-        sendData(dataS, size);
-        size = 0;
+        sendData(sendingData, BUFFER_SIZE);
+
 
         printf("Core 2: end\n");
     }
@@ -75,9 +64,9 @@ int main(void) {
     i2c_init(i2c, 400 * 1000);
     initAccel(i2c);
 
-    dataP = data0;
+    sensorData = data0;
     bufferInUse = 0;
-    wait = false;
+    fullBuffer = false;
 
     sleep_ms(5000);
     printf("Core 1: init\n");
@@ -85,21 +74,24 @@ int main(void) {
     multicore_launch_core1(main2);
 
     timeInit();
+
     while (1) {
-        if (wait) {
-            printf("Core 1: wait\n");
-            continue;
-        }
 
-        dataP[*i].time = timeSinceStart();
-        dataP[*i].x = readData(i2c, OUT_X_L);
-        dataP[*i].y = readData(i2c, OUT_Y_L);
-        dataP[*i].z = readData(i2c, OUT_Z_L);
+        sensorData[i].time = timeSinceStart();
+        sensorData[i].x = readData(i2c, OUT_X_L);
+        sensorData[i].y = readData(i2c, OUT_Y_L);
+        sensorData[i].z = readData(i2c, OUT_Z_L);
 
-        dataSize++;
+
+        printf("core 1: %i\n", i);
         i++;
 
-        printf("core 1: %i\n", dataSize);
+        if(i == BUFFER_SIZE) {
+            multicore_fifo_push_blocking(0);
+            multicore_fifo_pop_blocking();
+            i = 0;
+        }
+
 
         sleep_ms(50);
     }
