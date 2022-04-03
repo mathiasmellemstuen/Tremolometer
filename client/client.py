@@ -35,6 +35,7 @@ def usb_thread():
 
                 if new_data is not None:
                     data.extend(new_data)
+                    print(len(data))
 
                 interface.draw_data(data)
         else:

@@ -25,13 +25,8 @@ bool waitData, fullBuffer;
 
 void main2() {
 
-    printf("Core 2: init\n");
     while (1) {
-
         multicore_fifo_pop_blocking();
-
-        printf("Core 2: Start\n");
-
         // Calc new buffer
         bufferInUse = (bufferInUse + 1) % 2;
 
@@ -48,9 +43,6 @@ void main2() {
             sendingData = data0;
 
         sendData(sendingData, BUFFER_SIZE);
-
-
-        printf("Core 2: end\n");
     }
 }
 
@@ -68,32 +60,38 @@ int main(void) {
     bufferInUse = 0;
     fullBuffer = false;
 
-    sleep_ms(5000);
-    printf("Core 1: init\n");
+    //sleep_ms(5000);
 
     multicore_launch_core1(main2);
 
     timeInit();
 
+    waitForHandshake();
+
     while (1) {
+        uint16_t runningTime = waitForStartSignal();
 
-        sensorData[i].time = timeSinceStart();
-        sensorData[i].x = readData(i2c, OUT_X_L);
-        sensorData[i].y = readData(i2c, OUT_Y_L);
-        sensorData[i].z = readData(i2c, OUT_Z_L);
+        timeInit();
+        uint32_t endTime = runningTime + timeSinceStart();
 
+        for(uint32_t time = timeSinceStart(); time <= endTime; time = timeSinceStart()) {
 
-        printf("core 1: %i\n", i);
-        i++;
+            sensorData[i].time = time;
+            sensorData[i].x = readData(i2c, OUT_X_L);
+            sensorData[i].y = readData(i2c, OUT_Y_L);
+            sensorData[i].z = readData(i2c, OUT_Z_L);
 
-        if(i == BUFFER_SIZE) {
-            multicore_fifo_push_blocking(0);
-            multicore_fifo_pop_blocking();
-            i = 0;
+            i++;
+
+            if(i == BUFFER_SIZE) {
+                multicore_fifo_push_blocking(0);
+                multicore_fifo_pop_blocking();
+                i = 0;
+            }
+
+            sleep_ms(5);
         }
-
-
-        sleep_ms(50);
+        sendData(sensorData, BUFFER_SIZE);
     }
 
     return 0;

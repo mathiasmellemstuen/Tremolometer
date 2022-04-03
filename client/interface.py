@@ -2,12 +2,18 @@ from tkinter import *
 import matplotlib.pyplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from config import write_config
 
 class Interface:
     def __init__(self, config):
         self.window = Tk()
         self.window.title("Tremolometer")
         self.window.configure(bg="white")
+        self.menu = Menu(self.window)
+        self.settings_menu = Menu(self.menu, tearoff=False)
+        self.settings_menu.add_command(label="Innstillinger", command=self.menu_options)
+        self.menu.add_cascade(label="Fil", menu=self.settings_menu)
+        self.window.configure(menu=self.menu)
         self.start_button = None
         self.update_method = None
         self.frequency_graph_header = Label(text="Frekvens over tid", background="white", foreground="black", anchor="center")
@@ -21,6 +27,29 @@ class Interface:
 
         # For graph plotting frequency over time
         self.frequency_figure, self.frequency_plot, self.frequency_canvas, self.frequency_widget = self.create_graph(4, "Tid (s)", "Frekvens (Hz)")
+
+    def menu_options(self):
+        settings_window = Toplevel(self.window)
+        settings_window.title("Innstillinger")
+        settings_window.geometry("200x200")
+
+        Label(settings_window, text="Innstillinger").grid(row=0)
+        Label(settings_window, text="Måletid (ms)").grid(row=1, column=0)
+
+        entry = Entry(settings_window)
+        entry.grid(row=1, column=1)
+        entry.insert(0,self.config["maaletid"])
+        def menu_save_button():
+            entry_input = entry.get()
+            if entry_input.isdigit():
+                entry_input = int(entry_input)
+                self.config["maaletid"] = entry_input
+                write_config(self.config, "client/config.yaml")
+
+            settings_window.destroy()
+
+        Button(master=settings_window, text="Lagre", command=menu_save_button).grid(row=2)
+
 
     def set_methods(self, start_method, update_method):
         self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black", command=start_method)

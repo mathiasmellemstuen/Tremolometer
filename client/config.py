@@ -1,23 +1,15 @@
-def split_yaml_line(line):
-    try:
-        left, right = line.split(": ")
-        return left, right
-    except:
-        try:
-            left, right = line.split(":")
-            return left, right
-        except:
-            return None, None
+import yaml
 
 def read_config(path):
-    config = {}
 
     with open(path) as file:
-        for line in file.readlines():
-            left, right = split_yaml_line(line)
+        return yaml.safe_load(file)
 
-            if left is None or right is None:
-                continue
+    return None
 
-            config[left] = int(right)
-    return config
+def write_config(data, path):
+    try:
+        file = open(path, "w+")
+        yaml.dump(data, file, allow_unicode=True, default_flow_style=False)
+    except:
+        print("Could not write to file")
