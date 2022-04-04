@@ -14,12 +14,11 @@ void usbInit() {
 }
 
 void sendData(struct Data* data, int n) {
-
     // Splitting the data object into array of bytes
     unsigned char bytes[DATA_STRUCT_SIZE * n];
 
-    for(int i = 0; i < n; i++) {
-
+    // Move all data from buffer to the char array
+    for (int i = 0; i < n; i++) {
         bytes[0 + (DATA_STRUCT_SIZE * i)] = data[i].time >> 24;
         bytes[1 + (DATA_STRUCT_SIZE * i)] = data[i].time >> 16;
         bytes[2 + (DATA_STRUCT_SIZE * i)] = data[i].time >> 8;
@@ -61,14 +60,15 @@ int16_t waitForStartSignal() {
     // Return measuring time (in ms)
     return inn;
 }
-void waitForHandshake() {
 
+void waitForHandshake() {
     char in = 0x00;
 
-    while(in != '1') {
+    while (in != '1') {
         stdio_init_all();
         in = getchar_timeout_us(200 * 1000);
     }
+
     printf("2");
     fflush(stdout);
     fflush(stdin);

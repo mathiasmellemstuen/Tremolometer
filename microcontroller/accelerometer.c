@@ -9,15 +9,13 @@
 
 void initAccel(i2c_inst_t *i2c) {
     /*
-     * Init GPIO pins
+     * Init GPIO pins to be i2c pint
      */
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
     bi_decl(bi_2pins_with_func(SDA_PIN, SCL_PIN, GPIO_FUNC_I2C));
-
-    printf("i2c: gpio set\n");
 
     /*
      * Modify registers in startup
@@ -50,7 +48,7 @@ int writeReg(i2c_inst_t *i2c, const uint8_t reg, uint8_t *buff, const uint8_t nb
         msg[i + 1] = buff[i];
 
     // Write data to register(s) over i2C
-    i2c_write_blocking(i2c, ADDRESS, msg, (nbytes + 1), false);
+    numBytesRead = i2c_write_blocking(i2c, ADDRESS, msg, (nbytes + 1), false);
 
     return numBytesRead;
 }
@@ -70,18 +68,18 @@ int readReg(i2c_inst_t *i2c, const uint8_t reg, uint8_t *buff, const uint8_t nby
 }
 
 int16_t readData(i2c_inst_t *i2c, uint8_t reg) {
-    // TODO: Check STATUS_REG (ZYXDA(5)) that there is new data.
+    // Read two bytes of data and store in a 16-bit data structure
+    uint8_t lsb, msb;
 
-
-    // Read two bytes of data and store in a 16 bit data structure
-    uint8_t lsb;
-    uint8_t msb;
     i2c_write_blocking(i2c, ADDRESS, &reg, 1, true);
     i2c_read_blocking(i2c, ADDRESS, &lsb, 1, false);
 
+    // Move to next reg and read that
     reg |= 0x01;
     i2c_write_blocking(i2c, ADDRESS, &reg, 1, true);
     i2c_read_blocking(i2c, ADDRESS, &msb, 1, false);
+
+    // Return the 16 bit measurement
     return (int16_t)((msb << 8) | lsb);
 }
 
@@ -90,6 +88,7 @@ bool reservedAddr(uint8_t addr) {
     return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
 }
 
+// Test all i2c addresses and print where some device is connected
 void busScan(i2c_inst_t *i2c) {
     printf("\nI2C Bus Scan\n");
     printf("  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
@@ -112,6 +111,7 @@ void busScan(i2c_inst_t *i2c) {
     printf("Done.\n");
 }
 
+// Print the status of all registers
 void printRegisterStatus(i2c_inst_t *i2c) {
     uint8_t regVal;
     printf("Register status:\n");
@@ -136,19 +136,4 @@ void printRegisterStatus(i2c_inst_t *i2c) {
     readReg(i2c, CTRL_REG0, &regVal, 1);
     printf("Reg 6: "BTB_PATTERN "\n", BTB(regVal));
     printf("----\n");
-}
-
-void calculateValue(uint16_t raw_value, float *final_value, bool isAccel) {
-    // Convert with respect to the value being temperature or acceleration reading
-    float scaling;
-    float senstivity = 0.004f; // g per unit
-
-    if (isAccel == true) {
-        scaling = 64 / senstivity;
-    } else {
-        scaling = 64;
-    }
-
-    // raw_value is signed
-    *final_value = (float) ((int16_t) raw_value) / scaling;
 }

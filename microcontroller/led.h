@@ -6,6 +6,7 @@
 #define TREMOLOMETER_LED_H
 
 #include <stdbool.h>
+#include "pico/stdlib.h"
 
 static const int LED_R = 18;
 static const int LED_G = 19;
@@ -15,5 +16,10 @@ void ledInit();
 void setLed(bool on);
 
 void ledRGBInit();
-void ledRGBSet(bool rOn, bool gOn, bool bOn);
+
+static inline void ledRGBSet(bool rOn, bool gOn, bool bOn) {
+    gpio_put(LED_R, !rOn);
+    gpio_put(LED_G, !gOn);
+    gpio_put(LED_B, !bOn);
+}
 #endif //TREMOLOMETER_LED_H

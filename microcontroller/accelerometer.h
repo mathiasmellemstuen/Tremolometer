@@ -74,7 +74,5 @@ int16_t readData(i2c_inst_t *i2c, uint8_t reg);
 bool reservedAddr(uint8_t addr);
 void busScan(i2c_inst_t *i2c);
 void printRegisterStatus(i2c_inst_t *i2c);
-void calculateValue(uint16_t raw_value, float *final_value, bool isAccel);
-
 
 #endif //TREMOLOMETER_ACCELEROMETER_H
