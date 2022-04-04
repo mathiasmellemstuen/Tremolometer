@@ -10,7 +10,7 @@ class USBCommunication:
     def __init__(self):
         self.connection = None
         self.config = config.read_config("client/config.yaml")
-        self.connection_port_prefix = "COM" if os.name == "nt" else "/dev/"
+        self.connection_port_prefix = "" if os.name == "nt" else "/dev/"
 
     def search_for_comport(self):
         for port in serial.tools.list_ports.comports():
