@@ -4,16 +4,20 @@ import serial.tools.list_ports
 import serial
 import base64
 import config
+import os
 
 class USBCommunication:
     def __init__(self):
         self.connection = None
         self.config = config.read_config("client/config.yaml")
+        self.connection_port_prefix = "COM" if os.name == "nt" else "/dev/"
 
     def search_for_comport(self):
         for port in serial.tools.list_ports.comports():
             try:
-                temp_connection = serial.Serial(port="/dev/" + port.name, parity=serial.PARITY_NONE, timeout=1)
+                full_port = self.connection_port_prefix + port.name
+                print(full_port)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1)
                 time.sleep(0.1)
                 temp_connection.flush()
                 temp_connection.write("1".encode())
