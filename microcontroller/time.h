@@ -11,9 +11,6 @@
 static uint32_t startTime;
 
 void timeInit();
-
-static inline uint32_t timeSinceStart() {
-    return to_ms_since_boot(get_absolute_time()) - startTime;
-}
+uint32_t timeSinceStart();
 
 #endif //TREMOLOMETER_TIME_H

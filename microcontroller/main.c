@@ -11,7 +11,7 @@
 #include "time.h"
 
 #define BUFFER_SIZE 100
-
+#define WAIT_TIME 5
 // Define i2c instance
 i2c_inst_t* i2c;
 
@@ -30,12 +30,10 @@ void main2() {
         // Wait for signal to start sending the data.
         multicore_fifo_pop_blocking();
 
-        ledRGBSet(0,1,1);
-
         // Calc new buffer
         bufferInUse = (bufferInUse + 1) % 2;
 
-        // Sett the new buffer
+        // Set the new buffer
         if (bufferInUse == 0)
             sensorData = data0;
         else if (bufferInUse == 1)
@@ -52,7 +50,6 @@ void main2() {
 
         // Send the data from buffer
         sendData(sendingData, BUFFER_SIZE);
-        ledRGBSet(0,1,0);
     }
 }
 
@@ -84,7 +81,15 @@ int main(void) {
 
         ledRGBSet(0,0,1);
         // Do all measurements
-        for (uint32_t time = timeSinceStart(); time <= endTime; time = timeSinceStart()) {
+
+        uint32_t lastTime = 0;
+
+        for (uint32_t time = timeSinceStart(); time <= endTime + 1000; time = timeSinceStart()) {
+
+            if((time - lastTime) < WAIT_TIME)
+                continue;
+
+            lastTime = timeSinceStart();
             // Add the data to the current buffer
             sensorData[bufferIndex].time = time;
             sensorData[bufferIndex].x = readData(i2c, OUT_X_L);
@@ -100,9 +105,6 @@ int main(void) {
                 // Reset buffer index
                 bufferIndex = 0;
             }
-
-            // Wait for next measurement
-            sleep_ms(5);
         }
         // Send the remaining data
         sendData(sensorData, BUFFER_SIZE);
