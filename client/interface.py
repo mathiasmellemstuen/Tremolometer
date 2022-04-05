@@ -60,7 +60,7 @@ class Interface:
         self.connection_label.configure(foreground="red")
 
         self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
-        self.frequency_graph_header.grid(column=6, row=3, sticky="news")
+        self.frequency_graph_header.grid(column=1, row=3, columnspan=11, sticky="news")
         self.frequency_label.grid(column=1, row=5, sticky="news", padx=20, pady=20)
         self.measure_label.grid(column=6, row=1, sticky="news")
         self.connection_label.grid(column=11, row=1, sticky="news")
@@ -70,7 +70,7 @@ class Interface:
         self.connection_label.configure(foreground="green")
 
         self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
-        self.frequency_graph_header.grid(column=6, row=3, sticky="news")
+        self.frequency_graph_header.grid(column=1, row=3, columnspan=11, sticky="news")
         self.frequency_label.grid(column=1, row=5, sticky="news", padx=20, pady=20)
         self.measure_label.grid(column=6, row=1, sticky="news")
         self.connection_label.grid(column=11, row=1, sticky="news")
