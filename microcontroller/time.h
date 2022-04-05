@@ -1,14 +1,11 @@
-//
-// Created by Mathias on 21/03/2022.
-//
-
+/// @file time.h
 #ifndef TREMOLOMETER_TIME_H
 #define TREMOLOMETER_TIME_H
 
 #include "pico.h"
 #include "pico/time.h"
 
-static uint32_t startTime;
+static uint32_t startTime; //!< Store the time timeInit() was called.
 
 void timeInit();
 uint32_t timeSinceStart();

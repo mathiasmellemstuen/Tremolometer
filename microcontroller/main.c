@@ -61,7 +61,7 @@ int main(void) {
 
     i2c = i2c1;
     i2c_init(i2c, 400 * 1000);
-    initAccel(i2c);
+    initAccel(i2c, SELF_TEST_1);
 
     sensorData = data0;
     bufferInUse = 0;
@@ -78,15 +78,14 @@ int main(void) {
         // Start timing
         timeInit();
         uint32_t endTime = runningTime + timeSinceStart();
-
-        ledRGBSet(0,0,1);
-        // Do all measurements
-
         uint32_t lastTime = 0;
 
-        for (uint32_t time = timeSinceStart(); time <= endTime + 1000; time = timeSinceStart()) {
+        ledRGBSet(0,0,1);
 
-            if((time - lastTime) < WAIT_TIME)
+        // Do all measurements
+        for (uint32_t time = timeSinceStart(); time <= endTime + 1000; time = timeSinceStart()) {
+            // Wait for WAIT_TIME ms before taking next measurement
+            if ((time - lastTime) < WAIT_TIME)
                 continue;
 
             lastTime = timeSinceStart();

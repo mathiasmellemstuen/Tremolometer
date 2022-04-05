@@ -5,6 +5,9 @@
 #ifndef TREMOLOMETER_TREMOLOMETERSTATE_H
 #define TREMOLOMETER_TREMOLOMETERSTATE_H
 
+/***
+ * Enum for defining the state the current data buffer in in.
+ */
 enum TremolometerState {
         IDLE=1,
         BUFFER_FILLING=2,

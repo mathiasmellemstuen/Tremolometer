@@ -17,9 +17,5 @@ void setLed(bool on);
 
 void ledRGBInit();
 
-static inline void ledRGBSet(bool rOn, bool gOn, bool bOn) {
-    gpio_put(LED_R, !rOn);
-    gpio_put(LED_G, !gOn);
-    gpio_put(LED_B, !bOn);
-}
+void ledRGBSet(bool rOn, bool gOn, bool bOn);
 #endif //TREMOLOMETER_LED_H
