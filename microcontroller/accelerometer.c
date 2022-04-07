@@ -1,7 +1,3 @@
-//
-// Created by Tobias Hallingstad on 22/03/2022.
-//
-
 #include <stdio.h>
 #include "accelerometer.h"
 #include "hardware/i2c.h"
@@ -13,6 +9,7 @@
  * Setts the accelerometer register to be:
  * - High data rate
  * - Type of self test
+ *
  * @see Accelerometer doc
  * @param i2c Pointer to i2c instance
  * @param mode What mode the measurement shall use
@@ -48,8 +45,10 @@ void initAccel(i2c_inst_t *i2c, enum Mode mode) {
     i2c_write_blocking(i2c, ADDRESS, buf, 2, false);
 }
 
-/***
+/**
+ * @brief Write value to  register.
  * Write to a value to a register on the accelerometer.
+ *
  * @param i2c Pointer to a i2c instance.
  * @param reg What register to write to.
  * @param buff Pointer to a buffer that stores what to write.
@@ -75,8 +74,10 @@ int writeReg(i2c_inst_t *i2c, const uint8_t reg, uint8_t *buff, const uint8_t nb
     return numBytesRead;
 }
 
-/***
+/**
+ * @brief Read data from a register.
  * Read the values form a register.
+ *
  * @param i2c Pointer to i2c instance.
  * @param reg What register shall be read form.
  * @param buff Pointer to buffer the data shall be written to.
@@ -97,7 +98,7 @@ int readReg(i2c_inst_t *i2c, const uint8_t reg, uint8_t *buff, const uint8_t nby
     return numBytesRead;
 }
 
-/***
+/**
  * @brief Reads measurement data form the accelerometer.
  * Reads the first, then second X, Y or Z data register form the accelerometer. Then the to 8-bit numbers are combined into a 16-bit number.
  *
@@ -121,8 +122,10 @@ int16_t readData(i2c_inst_t *i2c, uint8_t reg) {
     return (int16_t)((msb << 8) | lsb);
 }
 
-/***
+/**
+ * @brief Check if a address is reserved.
  * Calculate if the address is reserved.
+ *
  * @param addr Address to test.
  * @return True if the address is reserved.
  */
@@ -130,7 +133,7 @@ bool reservedAddr(uint8_t addr) {
     return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
 }
 
-/***
+/**
  * @brief Print i2c connection status off all ports.
  * Read some data from each i2c address to determine if there are any i2c device contented to that address. If there is @ will be printed in that spot.
  * This is a good function to use if the address for a connected i2c device is not known.
@@ -159,8 +162,10 @@ void busScan(i2c_inst_t *i2c) {
     printf("Done.\n");
 }
 
-/***
+/**
+ * @brief Print status for all CTRL registers.
  * Print the status of the all control registers for the accelerometer.
+ *
  * @param i2c Pointer to i2c instance.
  */
 void printRegisterStatus(i2c_inst_t *i2c) {

@@ -1,11 +1,8 @@
-//
-// Created by Mathias on 21/03/2022.
-//
-
 #include "time.h"
 #include "pico/time.h"
 
 /**
+ * @brief Set startTime to time since boot
  * Set startTime to current time since boot.
  */
 void timeInit() {
@@ -13,7 +10,9 @@ void timeInit() {
 }
 
 /**
+ * @brief Calc time since timeInit().
  * Calculates the time since timeInit() was called.
+ *
  * @return Time since timeInit() in ms.
  */
 uint32_t timeSinceStart() {

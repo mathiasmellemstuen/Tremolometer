@@ -1,7 +1,3 @@
-//
-// Created by Mathias on 16.03.2022.
-//
-
 #include "led.h"
 #include "pico/stdlib.h"
 
@@ -17,6 +13,7 @@ void ledInit() {
 /**
  * @brief Sett the LED on or off
  * Setts the rapsberry PI Pico LED on or off
+ *
  * @param on LED is on
  */
 void setLed(bool on) {
@@ -37,7 +34,9 @@ void ledRGBInit() {
 }
 
 /**
+ * @brief Toggle RGB LED
  * Sett the Red, Green or Blue LED on or off
+ *
  * @param rOn Red LED on
  * @param gOn Green LED on
  * @param bOn Blue LED on

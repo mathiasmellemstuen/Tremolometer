@@ -1,18 +1,7 @@
-//
-// Created by Mathias on 16.03.2022.
-//
-
 #include "base64Encode.h"
 #include <malloc.h>
 
-
-/*
- *  Hentet fra:
- *
- *  https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
- */
-
-/***
+/**
  * @brief Encode a char array to base 64.
  * Takes a char array, generated form the data buffer, and encodes all the characters to base64.
  * This algorithm is taken form: https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c

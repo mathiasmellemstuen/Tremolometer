@@ -1,7 +1,4 @@
-//
-// Created by Tobias Hallingstad on 22/03/2022.
-//
-
+/// @file accelerometer.h
 #ifndef TREMOLOMETER_ACCELEROMETER_H
 #define TREMOLOMETER_ACCELEROMETER_H
 
@@ -64,12 +61,12 @@ static const float SENSITICITY_2G = 1.0f / 256; //!< (g/LSB).
 static const float EARTH_GRAVITY = 9.80665;     //!< Earth's gravity in [m/s^2].
 
 /**
- * Defining different measurement modes for the accelerometer
+ * Defining different measurement modes for the accelerometer.
  */
 enum Mode {
-    NO_SELF_TEST=0,
-    SELF_TEST_1=1,
-    SELF_TEST_2=2
+    NO_SELF_TEST=0, //!< No self test.
+    SELF_TEST_1=1,  //!< Self test mode 1.
+    SELF_TEST_2=2   //!< Self test mode 2.
 };
 
 /*

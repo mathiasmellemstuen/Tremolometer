@@ -1,7 +1,4 @@
-//
-// Created by Mathias on 16.03.2022.
-//
-
+/// @file data.h
 #ifndef TREMOLOMETER_DATA_H
 #define TREMOLOMETER_DATA_H
 

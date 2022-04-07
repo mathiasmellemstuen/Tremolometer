@@ -1,7 +1,4 @@
-//
-// Created by Mathias on 16.03.2022.
-//
-
+/// @file usbTransfer.h
 #ifndef TREMOLOMETER_USBTRANSFER_H
 #define TREMOLOMETER_USBTRANSFER_H
 
