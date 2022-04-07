@@ -7,8 +7,6 @@
 
 #include "data.h"
 
-#define WAIT_FOR_START_SIGNAL_INTERVAL_TIME_MS 100
-
 void usbInit();
 void sendData(struct Data* data, int n);
 int16_t waitForStartSignal();

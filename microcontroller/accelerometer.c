@@ -18,18 +18,14 @@
  * @param mode What mode the measurement shall use
  */
 void initAccel(i2c_inst_t *i2c, enum Mode mode) {
-    /*
-     * Init GPIO pins to be i2c pint
-     */
+    // Init GPIO pins to be i2c pint
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
     bi_decl(bi_2pins_with_func(SDA_PIN, SCL_PIN, GPIO_FUNC_I2C));
 
-    /*
-     * Modify registers in startup
-     */
+    // Modify registers in startup
     uint8_t buf[2];
     // Turn normal mode and 1.344kHz data rate on
     buf[0] = CTRL_REG1;
@@ -165,7 +161,7 @@ void busScan(i2c_inst_t *i2c) {
 
 /***
  * Print the status of the all control registers for the accelerometer.
- * @param i2c Pointer to i2c instance
+ * @param i2c Pointer to i2c instance.
  */
 void printRegisterStatus(i2c_inst_t *i2c) {
     uint8_t regVal;

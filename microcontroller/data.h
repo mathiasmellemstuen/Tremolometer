@@ -7,9 +7,12 @@
 
 #include "pico/stdlib.h"
 
-// Total 10 bytes in Data struct
-#define DATA_STRUCT_SIZE 10
+#define DATA_STRUCT_SIZE 10 //!< Size of the data struct in bytes.
 
+/**
+ * @brief Store the time and data of a single measurement.
+ * Stores the time of a x,y,z accelerometer measurement.
+ */
 struct Data {
     uint32_t time;
     int16_t x, y, z;

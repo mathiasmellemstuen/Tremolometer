@@ -10,20 +10,21 @@
 #include "usbTransfer.h"
 #include "time.h"
 
-#define BUFFER_SIZE 100
-#define WAIT_TIME 5
+#define BUFFER_SIZE 100 //!< Define the buffer size to use.
+#define WAIT_TIME 5     //!< Define how long between measurements (in ms).
 // Define i2c instance
-i2c_inst_t* i2c;
+i2c_inst_t* i2c;    //!< The i2c instance.
 
 // Define data buffer 1 and 2
-struct Data data0[BUFFER_SIZE];
-struct Data data1[BUFFER_SIZE];
+struct Data data0[BUFFER_SIZE]; //!< Array of Data structs to act as a buffer to store measurements.
+struct Data data1[BUFFER_SIZE]; //!< Array of Data structs to act as a buffer to store measurements.
 
 // Define pointer to data buffers
-struct Data* sensorData;
-struct Data* sendingData;
+struct Data* sensorData;    //!< Pointer to the data buffer data is being stored to.
+struct Data* sendingData;   //!< Pinter to the data buffer data is being sent from.
 
-uint8_t bufferInUse, bufferIndex;
+uint8_t bufferInUse;    //!< Indicate what buffer is being used to write measurements to.
+uint8_t bufferIndex;    //!< Where in the buffer data is being stored to.
 
 void main2() {
     while (1) {
