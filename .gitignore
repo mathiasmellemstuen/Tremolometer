@@ -4,3 +4,11 @@ microcontroller/build
 venv
 microcontroller/cmake-build-debug
 client/__pycache__
+fotterFile
+headerFile
+html/
+latex/
+styleSheetFile
+testConf
+testConf.bak
+testLay
