@@ -1,4 +1,5 @@
 /// @file data.h
+/// @brief Definition of the data struct.
 #ifndef TREMOLOMETER_DATA_H
 #define TREMOLOMETER_DATA_H
 

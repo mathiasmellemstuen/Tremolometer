@@ -1,4 +1,5 @@
 /// @file base64Encode.h
+/// @brief Encode data buffer to base64.
 #ifndef TREMOLOMETER_BASE64ENCODE_H
 #define TREMOLOMETER_BASE64ENCODE_H
 

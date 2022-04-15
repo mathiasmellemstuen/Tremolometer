@@ -1,4 +1,5 @@
 /// @file tremolometerState.h
+/// @brief Define the state of the Tremolometer
 #ifndef TREMOLOMETER_TREMOLOMETERSTATE_H
 #define TREMOLOMETER_TREMOLOMETERSTATE_H
 
