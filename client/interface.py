@@ -14,6 +14,46 @@ from typing import Any, List
 from costumeTyping import Config, Data
 
 
+class Graph_data:
+    """!
+    Container class for graph data. Used to display the raw data and the frequency.
+    """
+    def __init__(self, *data: tuple[Figure, Any, FigureCanvasTkAgg, Any] or Any) -> None:
+        """!
+        Constructor.
+
+        @params self Pointer to self.
+        @params *data all data in as a tuple.
+        """
+        self.padding_value = 1.10
+        self.color = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
+        self.figure, self.plot, self.canvas, self.widget = data
+
+    def draw(self, data: List[Data] or List[tuple[int, int]]) -> None:
+        """!
+        Draws the data to the figure.
+
+        @param self Pointer to self
+        @param data List containing data to plot
+        """
+        if data is None:
+            self.canvas.draw()
+            return
+
+        if not len(data) == 0:
+            padding_value = 1.10
+            max_value = max([max(element[1:]) for element in data]) * self.padding_value
+            min_value = min([min(element[1:]) for element in data]) * self.padding_value
+
+            self.plot.set_ylim(min_value, max_value)
+
+            for i in range(0, len(data[0]) - 1):
+                self.plot.plot([element[0] for element in data], [element[i + 1] for element in data],
+                               color=self.color[i])
+
+        self.canvas.draw()
+
+
 class Interface:
     """!
     Interface class.
@@ -46,13 +86,10 @@ class Interface:
         self.config = config
 
         # For graph plotting data over time
-        self.data_figure, self.data_plot, self.data_canvas, self.data_widget = self.create_graph(2, "Tid (s)",
-                                                                                                 "Bevegelse (mm)")
+        self.data = self.create_graph(2, "Tid (s)", "Bevegelse (mm)")
 
         # For graph plotting frequency over time
-        self.frequency_figure, self.frequency_plot, self.frequency_canvas, self.frequency_widget = self.create_graph(4,
-                                                                                                                     "Tid (s)",
-                                                                                                                     "Frekvens (Hz)")
+        self.frequency = self.create_graph(4, "Tid (s)", "Frekvens (Hz)")
 
     def menu_options(self) -> None:
         """!
@@ -82,7 +119,7 @@ class Interface:
 
         Button(master=settings_window, text="Lagre", command=menu_save_button).grid(row=2)
 
-    def set_methods(self, start_method, update_method) -> None:
+    def set_methods(self, start_method: Any, update_method: Any) -> None:
         """!
         Attach a method to a button.
 
@@ -128,22 +165,7 @@ class Interface:
         @param self Pointer to self.
         @param data: What data to draw
         """
-        if data is None:
-            self.data_canvas.draw()
-            return
-
-        if not len(data) == 0:
-            padding_value = 1.10
-            max_value = max([max(element[1:]) for element in data]) * padding_value
-            min_value = min([min(element[1:]) for element in data]) * padding_value
-
-            self.data_plot.set_ylim(min_value, max_value)
-
-        self.data_plot.plot([element[0] for element in data], [element[1] for element in data], color=(1.0, 0.0, 0.0))
-        self.data_plot.plot([element[0] for element in data], [element[2] for element in data], color=(0.0, 1.0, 0.0))
-        self.data_plot.plot([element[0] for element in data], [element[3] for element in data], color=(0.0, 0.0, 1.0))
-
-        self.data_canvas.draw()
+        self.data.draw(data)
 
     def update(self) -> None:
         """!
@@ -154,7 +176,7 @@ class Interface:
         self.update_method()
         self.window.mainloop()
 
-    def create_graph(self, row: int, x_label: str, y_label: str) -> tuple[Figure, Any, FigureCanvasTkAgg, Canvas]:
+    def create_graph(self, row: int, x_label: str, y_label: str) -> Graph_data:
         """!
         Create a graph window.
 
@@ -179,4 +201,4 @@ class Interface:
         widget = canvas.get_tk_widget()
         widget.grid(column=1, row=row, columnspan=11, sticky=W + E)
 
-        return figure, plot, canvas, widget
+        return Graph_data(figure, plot, canvas, widget)
