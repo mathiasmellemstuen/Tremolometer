@@ -9,8 +9,8 @@ def create_spectrogram_from_data(data, graph, config):
         data_points.append(i[1])
 
     data_points = np.asarray(data_points)
-    sampling_rate = 1000
-    segment_length = 2500
+    sampling_rate = 1/0.005
+    segment_length = 2050
     frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, mode="psd", scaling="density",
                                                 nperseg=segment_length, nfft=10 * segment_length, noverlap=10)
     frequencies_min = 0
