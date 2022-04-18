@@ -1,15 +1,16 @@
-//
-// Created by Mathias on 16.03.2022.
-//
-
+/// @file data.h
+/// @brief Definition of the data struct.
 #ifndef TREMOLOMETER_DATA_H
 #define TREMOLOMETER_DATA_H
 
 #include "pico/stdlib.h"
 
-// Total 10 bytes in Data struct
-#define DATA_STRUCT_SIZE 10
+#define DATA_STRUCT_SIZE 10 //!< Size of the data struct in bytes.
 
+/**
+ * @brief Store the time and data of a single measurement.
+ * Stores the time of a x,y,z accelerometer measurement.
+ */
 struct Data {
     uint32_t time;
     int16_t x, y, z;
