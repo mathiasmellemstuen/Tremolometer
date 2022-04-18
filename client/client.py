@@ -91,8 +91,9 @@ def update() -> None:
         measuring = False
 
         # Calculating and drawing spectrogram when the measuring is finished
-        spectrogram.create_spectrogram_from_data(data, interface.frequency_plot, config)
-        interface.frequency_canvas.draw()
+        spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
+        interface.frequency.canvas.draw()
+        interface.update()
 
     interface.window.after(1, update)
 
@@ -117,7 +118,7 @@ def on_exit() -> None:
 
 
 interface.window.protocol("WM_DELETE_WINDOW", on_exit)
-spectrogram.create_spectrogram_from_data([(0, 0, 0, 0)] * 20000, interface.frequency_plot, config)
-interface.frequency_canvas.draw()
+spectrogram.create_spectrogram_from_data([(0, 0, 0, 0)] * 20000, interface.frequency.plot, config)
+interface.frequency.canvas.draw()
 interface.set_methods(start_button, update)
 interface.update()

@@ -87,8 +87,8 @@ class Interface:
         # For graph plotting data over time
         self.data = self.create_graph(2, "Tid (s)", "Bevegelse (mm)")
 
-        self.data_plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
-        self.data_plot.set_xlim([0, self.config["maaletid"]])
+        self.data.plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
+        self.data.plot.set_xlim([0, self.config["maaletid"]])
 
         # For graph plotting frequency over time
         self.frequency = self.create_graph(4, "Tid (s)", "Frekvens (Hz)")
