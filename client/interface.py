@@ -3,6 +3,7 @@ import matplotlib.pyplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from config import write_config
+from spectrogram import create_spectrogram_from_data
 
 class Interface:
     def __init__(self, config):
@@ -16,7 +17,7 @@ class Interface:
         self.window.configure(menu=self.menu)
         self.start_button = None
         self.update_method = None
-        self.frequency_graph_header = Label(text="Frekvens over tid", background="white", foreground="black", anchor="center")
+        self.frequency_graph_header = Label(text="Spektrogram", background="white", foreground="black", anchor="center")
         self.frequency_label = Label(text="Gjennomsnittlig frekvens: --Hz", padx=10, pady=10, background="white", foreground="black", anchor="w")
         self.measure_label = Label(text="Måling: 0 / 20 s", background="white", foreground="black", anchor="center")
         self.connection_label = Label(text="Tilkoblet", background="white", foreground="green", anchor="e", padx=25)
@@ -24,6 +25,9 @@ class Interface:
 
         # For graph plotting data over time
         self.data_figure, self.data_plot, self.data_canvas, self.data_widget = self.create_graph(2, "Tid (s)", "Bevegelse (mm)")
+
+        self.data_plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
+        self.data_plot.set_xlim([0, self.config["maaletid"]])
 
         # For graph plotting frequency over time
         self.frequency_figure, self.frequency_plot, self.frequency_canvas, self.frequency_widget = self.create_graph(4, "Tid (s)", "Frekvens (Hz)")
@@ -95,7 +99,6 @@ class Interface:
         self.data_plot.plot([element[0] for element in data], [element[1] for element in data], color=(1.0, 0.0, 0.0))
         self.data_plot.plot([element[0] for element in data], [element[2] for element in data], color=(0.0, 1.0, 0.0))
         self.data_plot.plot([element[0] for element in data], [element[3] for element in data], color=(0.0, 0.0, 1.0))
-
         self.data_canvas.draw()
 
     def update(self):
@@ -109,8 +112,6 @@ class Interface:
         plot.set_ylabel(y_label)
         plot.grid(color='gray', linestyle='dashed')
 
-        plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
-        plot.set_xlim([0, self.config["maaletid"]])
         figure.tight_layout()
 
         canvas = FigureCanvasTkAgg(figure, master=self.window)

@@ -4,8 +4,19 @@ from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning
 from timer import get_current_time_ms
 import threading
-
+import spectrogram
 data = []
+
+
+# Creating test data
+#for i in range(0, 20000):
+#    if i < 5000:
+#        data.append((i, 1000 * math.sin(i * 0.006), 0, 0))
+#    elif i > 10000:
+#        data.append((i, 1000 * math.sin(i * 0.1), 0, 0))
+#    else:
+#        data.append((i, 1000 * math.sin(i * 0.02), 0, 0))
+
 config = read_config("client/config.yaml")
 usb_communication = USBCommunication()
 interface = Interface(config)
@@ -64,6 +75,10 @@ def update():
         interface.finished_ui()
         measuring = False
 
+        # Calculating and drawing spectrogram when the measuring is finished
+        spectrogram.create_spectrogram_from_data(data, interface.frequency_plot, config)
+        interface.frequency_canvas.draw()
+
     interface.window.after(1, update)
 
 usb_thread = threading.Thread(target=usb_thread)
@@ -80,6 +95,7 @@ def on_exit():
     interface.window.destroy()
 
 interface.window.protocol("WM_DELETE_WINDOW", on_exit)
-interface.draw_data(data)
+spectrogram.create_spectrogram_from_data([(0, 0, 0, 0)] * 20000, interface.frequency_plot, config)
+interface.frequency_canvas.draw()
 interface.set_methods(start_button, update)
 interface.update()

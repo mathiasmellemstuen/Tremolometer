@@ -16,7 +16,6 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                print(full_port)
                 temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1)
                 time.sleep(0.1)
                 temp_connection.flush()
