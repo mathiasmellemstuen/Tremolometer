@@ -30,11 +30,6 @@
   (byte & 0x02 ? '1' : '0'), \
   (byte & 0x01 ? '1' : '0')
 
-/*
- * Notes:
- * Yellow -> SCL -> 6
- * Blue   -> SDA -> 7
- */
 static const uint SCL_PIN = 27; //!< i2c clock pin.
 static const uint SDA_PIN = 26; //!< i2c data pin.
 
