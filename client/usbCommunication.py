@@ -1,5 +1,4 @@
-"""!
-@package USB_Communication
+"""
 Documentation for this module.
 
 More details.

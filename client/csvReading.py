@@ -1,5 +1,4 @@
-"""!
-@package csv_reading
+"""
 Convert Data to csv
 """
 from usbCommunication import Data

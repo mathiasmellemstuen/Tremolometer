@@ -1,8 +1,5 @@
-"""!
-@package Interface
+"""
 Handle GUI.
-
-Detailed description.
 """
 
 from tkinter import *

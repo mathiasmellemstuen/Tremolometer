@@ -1,5 +1,4 @@
-"""!
-@package Timer
+"""
 Different time functions.
 """
 import time
