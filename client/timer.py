@@ -1,4 +1,4 @@
-"""
+"""!
 Different time functions.
 """
 import time

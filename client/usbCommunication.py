@@ -1,4 +1,4 @@
-"""
+"""!
 Documentation for this module.
 
 More details.

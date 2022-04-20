@@ -1,4 +1,4 @@
-"""
+"""!
 Handle config data
 """
 from typing import Optional
