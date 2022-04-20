@@ -1,5 +1,11 @@
-/// @file accelerometer.h
-/// @brief Accelerometer code.
+/**
+ * @file accelerometer.h
+ * @brief Accelerometer code.
+ *
+ * Pin layout on Tiny 2040:
+ *  - SCL pin = A1 = Yellow
+ *  - SDA pin = A0 = Blue
+ */
 #ifndef TREMOLOMETER_ACCELEROMETER_H
 #define TREMOLOMETER_ACCELEROMETER_H
 
