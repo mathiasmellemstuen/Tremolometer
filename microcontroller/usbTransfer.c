@@ -46,8 +46,14 @@ int16_t waitForStartSignal() {
         stdio_init_all();
         char character = getchar();
 
-        if(character == 'S') {
+        if(character == 'S') { // Start signal
             break;
+
+        } else if(character == 'E') { // Exit signal
+            ledRGBSet(true, true, true);
+            waitForHandshake();
+            waitForStartSignal();
+            return 0;
         }
     }
 
