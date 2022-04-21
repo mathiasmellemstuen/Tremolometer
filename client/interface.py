@@ -9,14 +9,15 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from config import write_config
 from spectrogram import create_spectrogram_from_data
 from typing import Any, List
-from costumeTyping import Config, Data
+from costumeTyping import Config, Data, Plot, Widget
 
 
 class Graph_data:
     """!
     Container class for graph data. Used to display the raw data and the frequency.
     """
-    def __init__(self, time_full_time : bool, x_label : str, y_label : str, config: Config, *data: tuple[Figure, Any, FigureCanvasTkAgg, Any] or Any) -> None:
+    def __init__(self, time_full_time: bool, x_label: str, y_label: str, config: Config,
+                 *data: tuple[Figure, Plot, FigureCanvasTkAgg, Widget] or Any) -> None:
         """!
         Constructor.
 
@@ -32,7 +33,6 @@ class Graph_data:
         self.time_full_time = time_full_time
 
     def clear(self):
-
         self.plot.cla()
         self.plot.set_xlabel(self.x_label)
         self.plot.set_ylabel(self.y_label)
@@ -72,9 +72,7 @@ class Graph_data:
 
 class Interface:
     """!
-    Interface class.
-
-    More details.
+    Handle the user interface
     """
 
     def __init__(self, config: Config) -> None:
@@ -102,7 +100,6 @@ class Interface:
 
         # For graph plotting data over time
         self.data = self.create_graph(2, "Tid (s)", "Bevegelse (mm)", True)
-
 
         # For graph plotting frequency over time
         self.frequency = self.create_graph(4, "Tid (s)", "Frekvens (Hz)", False)
@@ -137,13 +134,12 @@ class Interface:
 
     def set_methods(self, start_method: Any, update_method: Any, restart_method: Any) -> None:
         """!
-        Attach a method to a button.
-
         Attach a start method to the start button and a method to the update variable.
 
         @param self Pointer to self.
         @param start_method Pointer to the start method.
         @param update_method Pointer to the method called each update.
+        @param restart_method Pointer to the method called to restart taking measurement.
         """
         self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black",
                                    command=start_method)
@@ -194,7 +190,7 @@ class Interface:
         self.update_method()
         self.window.mainloop()
 
-    def create_graph(self, row: int, x_label: str, y_label: str, time_full_time : bool) -> Graph_data:
+    def create_graph(self, row: int, x_label: str, y_label: str, time_full_time: bool) -> Graph_data:
         """!
         Create a graph window.
 
@@ -202,8 +198,9 @@ class Interface:
         @param row The number of rows
         @param x_label Label for x-axis
         @param y_label Label for y-axis
+        @param time_full_time Show X axis if True. Show something else if False...
 
-        @return figure, plot, canvas, widget
+        @return Graph_data object
         """
         figure = Figure(figsize=(19, 5))
         plot = figure.add_subplot(111)

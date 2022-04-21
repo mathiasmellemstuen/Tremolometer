@@ -12,12 +12,11 @@ import threading
 import spectrogram
 
 data = []
-
 """!Store data"""
 config: Config = read_config("client/config.yaml")
 usb_communication: USBCommunication = USBCommunication()
 # Creating test data
-#for i in range(0, 20000):
+# for i in range(0, 20000):
 #    if i < 5000:
 #        data.append((i, 1000 * math.sin(i * 0.006), 0, 0))
 #    elif i > 10000:
@@ -44,6 +43,7 @@ def start_button() -> None:
     else:
         showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
 
+
 def restart_button() -> None:
     global data
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
@@ -53,6 +53,7 @@ def restart_button() -> None:
         interface.frequency.clear()
         interface.frequency.canvas.draw()
         start_button()
+
 
 def usb_thread() -> None:
     """

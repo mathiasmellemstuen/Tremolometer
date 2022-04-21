@@ -11,3 +11,8 @@ Config = TypeVar('Config', bound=Any)
 
 Data = TypeVar('Data', bound=Tuple[int, int, int, int])
 """!Define Data as type"""
+
+Plot = TypeVar('Plot', bound=Any)
+"""!Define Plot as type"""
+
+Widget = TypeVar('Widget', bound=Any)

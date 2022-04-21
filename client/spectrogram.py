@@ -1,9 +1,21 @@
 from matplotlib import pyplot as plot
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 from scipy import signal
 import numpy as np
 
+from typing import List
+from costumeTyping import Data, Config
 
-def create_spectrogram_from_data(data, graph, config):
+
+def create_spectrogram_from_data(data: List[Data], graph: Figure, config: Config) -> None:
+    """!
+    Create spectrogram figure for the GUI based on the Data measured.
+
+    @param data Measurement data.
+    @param graph The given matplotlib figure to use as a spectrogram.
+    @param config Configuration dict
+    """
     data_points = []
     for i in data:
         data_points.append(i[1])
@@ -11,7 +23,8 @@ def create_spectrogram_from_data(data, graph, config):
     data_points = np.asarray(data_points)
     sampling_rate = 1/0.005
     segment_length = 100
-    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=10 * sampling_rate, mode="psd", scaling="density", nperseg=segment_length, nfft=None, noverlap=10)
+    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=10 * sampling_rate, mode="psd", scaling="density",
+                                                nperseg=segment_length, nfft=None, noverlap=10)
 
     frequencies_min = 0
     frequencies_max = 20
