@@ -43,7 +43,7 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1, baudrate=115200)
                 time.sleep(0.1)
                 temp_connection.flush()
                 temp_connection.write("1".encode())

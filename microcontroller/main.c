@@ -62,7 +62,7 @@ int main(void) {
 
     i2c = i2c1;
     i2c_init(i2c, 400 * 1000);
-    initAccel(i2c, SELF_TEST_1);
+    initAccel(i2c, NO_SELF_TEST);
 
     sensorData = data0;
     bufferInUse = 0;

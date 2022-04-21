@@ -12,8 +12,10 @@ import threading
 import spectrogram
 
 data = []
-config = read_config("client/config.yaml")
-usb_communication = USBCommunication()
+
+"""!Store data"""
+config: Config = read_config("client/config.yaml")
+usb_communication: USBCommunication = USBCommunication()
 # Creating test data
 #for i in range(0, 20000):
 #    if i < 5000:
@@ -115,7 +117,7 @@ def on_exit() -> None:
 
 
 interface.window.protocol("WM_DELETE_WINDOW", on_exit)
-# spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
+spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
 interface.frequency.canvas.draw()
 interface.set_methods(start_button, update)
 interface.update()
