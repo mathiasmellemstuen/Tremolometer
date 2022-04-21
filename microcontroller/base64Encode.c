@@ -1,4 +1,5 @@
 #include "base64Encode.h"
+#include "data.h"
 #include <malloc.h>
 
 /**
@@ -12,7 +13,7 @@
  * @return Pointer to char array.
  */
 char* encode(const unsigned char* data, size_t inputLength, size_t* outputLength) {
-    *outputLength = 4 * ((inputLength + 2) / 3);
+    *outputLength = calcOutputLen(inputLength);
 
     char *encodedData = malloc(*outputLength);
 

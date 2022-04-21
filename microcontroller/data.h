@@ -16,4 +16,8 @@ struct Data {
     int16_t x, y, z;
 };
 
+static inline int calcOutputLen(int inputLen) {
+    return 4 * ((inputLen + 2) / 3);
+}
+
 #endif //TREMOLOMETER_DATA_H

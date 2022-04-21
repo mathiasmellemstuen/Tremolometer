@@ -13,7 +13,7 @@
 #include "hardware/i2c.h"
 
 // Macro for printing int_8 to binary format
-#define BTB_PATTERN "%i -> %c%c%c%c%c%c%c%c";      //!< Pattern for printing a int_8 to it bit representation.
+#define BTB_PATTERN "%i -> %c%c%c%c%c%c%c%c"       //!< Pattern for printing a int_8 to it bit representation.
 
 /**
  * What to supply BTB_PATTERN with for int_8 to be printed as bits.

@@ -14,6 +14,7 @@ import serial
 import base64
 import config
 import os
+import math
 
 
 class USBCommunication:
@@ -97,7 +98,7 @@ class USBCommunication:
             return None
 
         if self.connection.inWaiting() > 0:
-            input = self.connection.read(1336)
+            input = self.connection.read(self.calc_buffer_size(100, 10))
             bytes = base64.b64decode(input)
             data = []
 
@@ -109,3 +110,7 @@ class USBCommunication:
                 data.append((time, x, y, z))
             return data
         return None
+
+    @staticmethod
+    def calc_buffer_size(input_len: int, package_size: int) -> int:
+        return math.ceil(4 * (((input_len * package_size) + 2) / 3))
