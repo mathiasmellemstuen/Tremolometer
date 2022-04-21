@@ -16,7 +16,7 @@ class Graph_data:
     """!
     Container class for graph data. Used to display the raw data and the frequency.
     """
-    def __init__(self, *data: tuple[Figure, Any, FigureCanvasTkAgg, Any] or Any) -> None:
+    def __init__(self, time_full_time : bool, x_label : str, y_label : str, config: Config, *data: tuple[Figure, Any, FigureCanvasTkAgg, Any] or Any) -> None:
         """!
         Constructor.
 
@@ -26,6 +26,22 @@ class Graph_data:
         self.padding_value = 1.10
         self.color = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
         self.figure, self.plot, self.canvas, self.widget = data
+        self.config = config
+        self.x_label = x_label
+        self.y_label = y_label
+        self.time_full_time = time_full_time
+
+    def clear(self):
+
+        self.plot.cla()
+        self.plot.set_xlabel(self.x_label)
+        self.plot.set_ylabel(self.y_label)
+
+        if self.time_full_time:
+            self.plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
+            self.plot.set_xlim([0, self.config["maaletid"]])
+
+        self.plot.grid(color='gray', linestyle='dashed')
 
     def draw(self, data: List[Data] or List[tuple[int, int]]) -> None:
         """!
@@ -34,6 +50,8 @@ class Graph_data:
         @param self Pointer to self
         @param data List containing data to plot
         """
+        self.clear()
+
         if data is None:
             self.canvas.draw()
             return
@@ -75,6 +93,7 @@ class Interface:
         self.window.configure(bg="white", menu=self.menu)
         self.start_button = None
         self.update_method = None
+        self.restart_method = None
         self.frequency_graph_header = Label(text="Spektrogram", background="white", foreground="black", anchor="center")
         self.frequency_label = Label(text="Gjennomsnittlig frekvens: --Hz", padx=10, pady=10, background="white", foreground="black", anchor="w")
         self.measure_label = Label(text="Måling: 0 / 20 s", background="white", foreground="black", anchor="center")
@@ -82,13 +101,11 @@ class Interface:
         self.config = config
 
         # For graph plotting data over time
-        self.data = self.create_graph(2, "Tid (s)", "Bevegelse (mm)")
+        self.data = self.create_graph(2, "Tid (s)", "Bevegelse (mm)", True)
 
-        self.data.plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
-        self.data.plot.set_xlim([0, self.config["maaletid"]])
 
         # For graph plotting frequency over time
-        self.frequency = self.create_graph(4, "Tid (s)", "Frekvens (Hz)")
+        self.frequency = self.create_graph(4, "Tid (s)", "Frekvens (Hz)", False)
 
     def menu_options(self) -> None:
         """!
@@ -118,7 +135,7 @@ class Interface:
 
         Button(master=settings_window, text="Lagre", command=menu_save_button).grid(row=2)
 
-    def set_methods(self, start_method: Any, update_method: Any) -> None:
+    def set_methods(self, start_method: Any, update_method: Any, restart_method: Any) -> None:
         """!
         Attach a method to a button.
 
@@ -131,6 +148,7 @@ class Interface:
         self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black",
                                    command=start_method)
         self.update_method = update_method
+        self.restart_method = restart_method
 
     def gen_start_button(self, text: str, foreground: str) -> None:
         """!
@@ -155,6 +173,7 @@ class Interface:
         @param self Pointer to self.
         """
         self.start_button.configure(text="Start ny måling")
+        self.start_button.configure(command=self.restart_method)
         self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
 
     def draw_data(self, data: List[Data]) -> None:
@@ -175,7 +194,7 @@ class Interface:
         self.update_method()
         self.window.mainloop()
 
-    def create_graph(self, row: int, x_label: str, y_label: str) -> Graph_data:
+    def create_graph(self, row: int, x_label: str, y_label: str, time_full_time : bool) -> Graph_data:
         """!
         Create a graph window.
 
@@ -198,4 +217,4 @@ class Interface:
         widget = canvas.get_tk_widget()
         widget.grid(column=1, row=row, columnspan=11, sticky=W + E)
 
-        return Graph_data(figure, plot, canvas, widget)
+        return Graph_data(time_full_time, x_label, y_label, self.config, figure, plot, canvas, widget)

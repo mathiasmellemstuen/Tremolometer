@@ -43,10 +43,10 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1, baudrate=115200)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1)
                 time.sleep(0.1)
                 temp_connection.flush()
-                temp_connection.write("1".encode())
+                temp_connection.write("T".encode())
                 time.sleep(0.1)
                 input = temp_connection.read(temp_connection.inWaiting())
 
@@ -54,7 +54,7 @@ class USBCommunication:
                     temp_connection.close()
                     continue
 
-                if input == b'2':
+                if input == b'T':
                     self.connection = temp_connection
                     return port
 
@@ -66,13 +66,13 @@ class USBCommunication:
 
         return None
 
-    def check_if_device_is_connected(self) -> serial:
+    def check_if_device_is_connected(self) -> bool:
         """!
         Check if the microcontroller is connected.
 
         @param self Pointer to self.
 
-        @return Serial connection.
+        @return True if we have a serial connection
         """
         return self.connection is not None
 
@@ -83,7 +83,8 @@ class USBCommunication:
         @param self Pointer to self.
         """
         self.connection.flush()
-        self.connection.write(str(self.config["maaletid"]).encode())
+        #self.connection.write(str(self.config["maaletid"]).encode())
+        self.connection.write("S".encode())
 
     def read(self) -> Optional[List[Data]]:
         """!
@@ -100,7 +101,7 @@ class USBCommunication:
             input = self.connection.read(1336)
             bytes = base64.b64decode(input)
             data = []
-
+            print(bytes)
             for i in range(100):
                 time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
                 x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)
