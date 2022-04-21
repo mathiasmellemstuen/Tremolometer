@@ -87,6 +87,9 @@ class USBCommunication:
         #self.connection.write(str(self.config["maaletid"]).encode())
         self.connection.write("S".encode())
 
+    def send_exit_signal(self) -> None:
+        self.connection.flush()
+        self.connection.write("E".encode())
     def read(self) -> Optional[List[Data]]:
         """!
         Return the data that is sent form the microcontroller.

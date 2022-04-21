@@ -50,7 +50,8 @@ def restart_button() -> None:
 
     if answer == "yes":
         data = []
-        interface.frequency.plot.clear()
+        interface.frequency.clear()
+        interface.frequency.canvas.draw()
         start_button()
 
 def usb_thread() -> None:
@@ -119,6 +120,7 @@ def on_exit() -> None:
     run_usb_thread = False
 
     if usb_communication.connection is not None:
+        usb_communication.send_exit_signal()
         usb_communication.connection.close()
 
     interface.window.destroy()
