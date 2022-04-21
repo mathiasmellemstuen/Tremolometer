@@ -8,6 +8,7 @@ from config import read_config
 from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning, askquestion
 from timer import get_current_time_ms
+from statistics import mean
 import threading
 import spectrogram
 
@@ -95,9 +96,22 @@ def update() -> None:
             device_was_connected = False
             showwarning("Frakoblet", "Tremolometer ble frakoblet")
 
+    # Run after the measuring is done
     if measuring and not len(data) == 0 and data[len(data) - 1][0] > config["maaletid"]:
         interface.finished_ui()
         measuring = False
+
+        # Normalize all axis
+        x_mean = mean(d[1] for d in data)
+        y_mean = mean(d[2] for d in data)
+        z_mean = mean(d[3] for d in data)
+
+        for i in range(len(data) - 1):
+            temp_data = list(data[i])
+            temp_data[1] = temp_data[1] - x_mean
+            temp_data[2] = temp_data[2] - y_mean
+            temp_data[3] = temp_data[3] - z_mean
+            data[i] = tuple(temp_data)
 
         # Calculating and drawing spectrogram when the measuring is finished
         spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
