@@ -27,6 +27,9 @@ uint8_t bufferInUse;    //!< Indicate what buffer is being used to write measure
 uint8_t bufferIndex;    //!< Where in the buffer data is being stored to.
 
 void main2() {
+
+    multicore_fifo_drain();
+
     while (1) {
         // Wait for signal to start sending the data.
         multicore_fifo_pop_blocking();
@@ -51,6 +54,7 @@ void main2() {
 
         // Send the data from buffer
         sendData(sendingData, BUFFER_SIZE);
+        ledRGBSet(true, false, false);
     }
 }
 
@@ -62,26 +66,27 @@ int main(void) {
 
     i2c = i2c1;
     i2c_init(i2c, 400 * 1000);
-    initAccel(i2c, SELF_TEST_1);
+    initAccel(i2c, NO_SELF_TEST);
 
     sensorData = data0;
     bufferInUse = 0;
 
+    multicore_fifo_drain();
     multicore_launch_core1(main2);
 
     waitForHandshake();
 
     while (1) {
         // Wait for start signal and get the measurement time.
+        ledRGBSet(false, false, true);
+        sleep_ms(1000);
         uint16_t runningTime = waitForStartSignal();
-        ledRGBSet(0,1,0);
-
+        runningTime = 20000;
+        ledRGBSet(false, true, false);
         // Start timing
         timeInit();
         uint32_t endTime = runningTime + timeSinceStart();
         uint32_t lastTime = 0;
-
-        ledRGBSet(0,0,1);
 
         // Do all measurements
         for (uint32_t time = timeSinceStart(); time <= endTime + 1000; time = timeSinceStart()) {
@@ -99,7 +104,7 @@ int main(void) {
             // If the buffer is full, initiate sending the data
             if (++bufferIndex == BUFFER_SIZE) {
                 // Send signal to core1 that it should start sending data
-                multicore_fifo_push_blocking(0);
+                multicore_fifo_push_blocking(1);
                 // Wait for core1 to indicate that measurement can start
                 multicore_fifo_pop_blocking();
                 // Reset buffer index

@@ -6,14 +6,16 @@ from costumeTyping import Data, Config
 from interface import Interface
 from config import read_config
 from usbCommunication import USBCommunication
-from tkinter.messagebox import showwarning
+from tkinter.messagebox import showwarning, askquestion
 from timer import get_current_time_ms
 import threading
 import spectrogram
 
 data = []
-config = read_config("client/config.yaml")
-usb_communication = USBCommunication()
+
+"""!Store data"""
+config: Config = read_config("client/config.yaml")
+usb_communication: USBCommunication = USBCommunication()
 # Creating test data
 #for i in range(0, 20000):
 #    if i < 5000:
@@ -42,6 +44,14 @@ def start_button() -> None:
     else:
         showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
 
+def restart_button() -> None:
+    global data
+    answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
+
+    if answer == "yes":
+        data = []
+        interface.frequency.plot.clear()
+        start_button()
 
 def usb_thread() -> None:
     """
@@ -115,7 +125,5 @@ def on_exit() -> None:
 
 
 interface.window.protocol("WM_DELETE_WINDOW", on_exit)
-# spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
-interface.frequency.canvas.draw()
-interface.set_methods(start_button, update)
+interface.set_methods(start_button, update, restart_button)
 interface.update()
