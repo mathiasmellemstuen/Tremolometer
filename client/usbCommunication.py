@@ -88,6 +88,11 @@ class USBCommunication:
         self.connection.write("S".encode())
 
     def send_exit_signal(self) -> None:
+        """!
+        Send an exit signal to the microcontroller.
+
+        @param self Pointer to self.
+        """
         self.connection.flush()
         self.connection.write("E".encode())
 
