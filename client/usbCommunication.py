@@ -93,8 +93,11 @@ class USBCommunication:
 
         @param self Pointer to self.
         """
-        self.connection.flush()
-        self.connection.write("E".encode())
+        try:
+            self.connection.flush()
+            self.connection.write("E".encode())
+        except:
+            print("Could not send stopping signal. Exiting")
 
     def read(self) -> Optional[List[Data]]:
         """!
