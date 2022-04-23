@@ -12,12 +12,11 @@ from typing import Any, List
 from costumeTyping import Config, Data, Plot, Widget
 
 
-class Graph_data:
+class GraphData:
     """!
     Container class for graph data. Used to display the raw data and the frequency.
     """
-    def __init__(self, time_full_time: bool, x_label: str, y_label: str, config: Config,
-                 *data: tuple[Figure, Plot, FigureCanvasTkAgg, Widget] or Any) -> None:
+    def __init__(self, x_axis_min: int, x_axis_max: int, x_axis_step:int, x_label: str, y_label: str, config: Config, figure: Figure, plot: Plot, canvas: FigureCanvasTkAgg, widget: Widget) -> None:
         """!
         Constructor.
 
@@ -25,21 +24,25 @@ class Graph_data:
         @params *data all data in as a tuple.
         """
         self.padding_value = 1.10
-        self.color = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
-        self.figure, self.plot, self.canvas, self.widget = data
+        self.axis_color_and_direction = (((1.0, 0.0, 0.0), "x"), ((0.0, 1.0, 0.0), "y"), ((0.0, 0.0, 1.0), "z"))
+        self.figure = figure
+        self.plot = plot
+        self.canvas = canvas
+        self.widget = widget
         self.config = config
         self.x_label = x_label
         self.y_label = y_label
-        self.time_full_time = time_full_time
+        self.x_axis_min = x_axis_min
+        self.x_axis_max = x_axis_max
+        self.x_axis_step = x_axis_step
 
     def clear(self):
         self.plot.cla()
         self.plot.set_xlabel(self.x_label)
         self.plot.set_ylabel(self.y_label)
 
-        if self.time_full_time:
-            self.plot.set_xticks(list(range(0, self.config["maaletid"] + 1))[0::1000])
-            self.plot.set_xlim([0, self.config["maaletid"]])
+        self.plot.set_xlim([self.x_axis_min, self.x_axis_max])
+        self.plot.set_xticks(list(range(0, self.x_axis_max + 1))[0::self.x_axis_step])
 
         self.plot.grid(color='gray', linestyle='dashed')
 
@@ -57,15 +60,15 @@ class Graph_data:
             return
 
         if not len(data) == 0:
-            padding_value = 1.10
             max_value = max([max(element[1:]) for element in data]) * self.padding_value
             min_value = min([min(element[1:]) for element in data]) * self.padding_value
 
             self.plot.set_ylim(min_value, max_value)
 
             for i in range(0, len(data[0]) - 1):
-                self.plot.plot([element[0] for element in data], [element[i + 1] for element in data],
-                               color=self.color[i])
+                self.plot.plot([element[0] for element in data], [element[i + 1] for element in data], color=self.axis_color_and_direction[i][0], label=self.axis_color_and_direction[i][1])
+
+            self.plot.legend() # Adding a legend to the plot
 
         self.canvas.draw()
 
@@ -84,25 +87,46 @@ class Interface:
         """
         self.window = Tk()
         self.window.title("Tremolometer")
+
+        self.start_method = None
+        self.update_method = None
+        self.restart_method = None
+        self.config = config
+
         self.menu = Menu(self.window)
         self.settings_menu = Menu(self.menu, tearoff=False)
         self.settings_menu.add_command(label="Innstillinger", command=self.menu_options)
         self.menu.add_cascade(label="Fil", menu=self.settings_menu)
         self.window.configure(bg="white", menu=self.menu)
-        self.start_button = None
-        self.update_method = None
-        self.restart_method = None
-        self.frequency_graph_header = Label(text="Spektrogram", background="white", foreground="black", anchor="center")
-        self.frequency_label = Label(text="Gjennomsnittlig frekvens: --Hz", padx=10, pady=10, background="white", foreground="black", anchor="w")
-        self.measure_label = Label(text="Måling: 0 / 20 s", background="white", foreground="black", anchor="center")
-        self.connection_label = Label(text="Tilkoblet", background="white", foreground="green", anchor="e", padx=25)
-        self.config = config
+
 
         # For graph plotting data over time
-        self.data = self.create_graph(2, "Tid (s)", "Bevegelse (mm)", True)
+        self.data = self.create_graph(row=2, column=1, column_span=11, x_label="Tid (ms)", y_label="Bevegelse (mm)", fig_size_x=1920, fig_size_y=400, figure_dpi=96, x_axis_min=0, x_axis_max=20000, x_axis_step=1000)
 
         # For graph plotting frequency over time
-        self.frequency = self.create_graph(4, "Tid (s)", "Frekvens (Hz)", False)
+        self.frequency = self.create_graph(row=4, column=1, column_span=11, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=1920, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
+        self.frequency_x = self.create_graph(row=6, column=1, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
+        self.frequency_y = self.create_graph(row=6, column=5, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
+        self.frequency_z = self.create_graph(row=6, column=9, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
+
+        self.frequency_graph_header = Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center").grid(row=3, column=1, columnspan=11, sticky="news")
+        self.frequency_graph_x_header = Label(text="Spektrogram for x-aksen", background="white", foreground="red", anchor="center").grid(row=5, column=1, columnspan=4)
+        self.frequency_graph_y_header = Label(text="Spektrogram for y-aksen", background="white", foreground="blue", anchor="center").grid(row=5, column=5, columnspan=4)
+        self.frequency_graph_z_header = Label(text="Spektrogram for z-aksen", background="white", foreground="green", anchor="center").grid(row=5, column=9, columnspan=4)
+
+        self.title = Label(text="Data", background="white", foreground="black", anchor="center")
+        self.connection_label = Label(text="Tilkoblet", background="white", foreground="green", anchor="e", padx=25)
+        self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black")
+
+        self.start_button.grid(row=1, column=1, sticky="news", padx=20, pady=20)
+        self.connection_label.grid(row=1, column=11, sticky="news")
+        self.title.grid(row=1, column=1, columnspan=11, sticky="news")
+
+        self.data.draw([])
+        self.frequency.draw([])
+        self.frequency_x.draw([])
+        self.frequency_y.draw([])
+        self.frequency_z.draw([])
 
     def menu_options(self) -> None:
         """!
@@ -141,12 +165,13 @@ class Interface:
         @param update_method Pointer to the method called each update.
         @param restart_method Pointer to the method called to restart taking measurement.
         """
-        self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black",
-                                   command=start_method)
+        self.start_method = start_method
         self.update_method = update_method
         self.restart_method = restart_method
 
-    def gen_start_button(self, text: str, foreground: str) -> None:
+        self.start_button.configure(command=self.start_method)
+
+    def change_status_text(self, text: str, foreground: str) -> None:
         """!
         Generate the start button.
 
@@ -156,11 +181,7 @@ class Interface:
         """
         self.connection_label.configure(text=text, foreground=foreground)
 
-        self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
-        self.frequency_graph_header.grid(column=1, row=3, columnspan=11, sticky="news")
-        self.frequency_label.grid(column=1, row=5, sticky="news", padx=20, pady=20)
-        self.measure_label.grid(column=6, row=1, sticky="news")
-        self.connection_label.grid(column=11, row=1, sticky="news")
+        #self.frequency_label.grid(column=12, row=2, sticky="n", padx=20, pady=20)
 
     def finished_ui(self) -> None:
         """!
@@ -190,7 +211,7 @@ class Interface:
         self.update_method()
         self.window.mainloop()
 
-    def create_graph(self, row: int, x_label: str, y_label: str, time_full_time: bool) -> Graph_data:
+    def create_graph(self, row: int, column: int, column_span: int, x_label: str, y_label: str, fig_size_x: int, fig_size_y: int, figure_dpi: int, x_axis_min: int, x_axis_max: int, x_axis_step:int) -> GraphData:
         """!
         Create a graph window.
 
@@ -202,7 +223,7 @@ class Interface:
 
         @return Graph_data object
         """
-        figure = Figure(figsize=(19, 5))
+        figure = Figure(figsize=(fig_size_x / figure_dpi, fig_size_y / figure_dpi), dpi=figure_dpi)
         plot = figure.add_subplot(111)
         plot.set_xlabel(x_label)
         plot.set_ylabel(y_label)
@@ -212,6 +233,6 @@ class Interface:
 
         canvas = FigureCanvasTkAgg(figure, master=self.window)
         widget = canvas.get_tk_widget()
-        widget.grid(column=1, row=row, columnspan=11, sticky=W + E)
+        widget.grid(column=column, row=row, columnspan=column_span, sticky=W + E)
 
-        return Graph_data(time_full_time, x_label, y_label, self.config, figure, plot, canvas, widget)
+        return GraphData(x_axis_min=x_axis_min, x_axis_max=x_axis_max, x_axis_step=x_axis_step, x_label=x_label, y_label=y_label, config=self.config, figure=figure, plot=plot, canvas=canvas, widget=widget)

@@ -69,7 +69,6 @@ def usb_thread() -> None:
             if new_data is not None:
                 data.extend(new_data)
                 last_packet_time = get_current_time_ms()
-                print(data[len(data) - 1])
 
             interface.draw_data(data)
         else:
@@ -88,9 +87,9 @@ def update() -> None:
 
     if usb_communication.check_if_device_is_connected():
         device_was_connected = True
-        interface.gen_start_button("Tilkoblet", "green")
+        interface.change_status_text("Tilkoblet", "green")
     else:
-        interface.gen_start_button("Ikke tilkoblet", "red")
+        interface.change_status_text("Ikke tilkoblet", "red")
 
         if device_was_connected:
             device_was_connected = False
