@@ -11,7 +11,7 @@ from timer import get_current_time_ms
 from statistics import mean
 import threading
 import spectrogram
-
+import numpy as np
 data = []
 """!Store data"""
 config: Config = read_config("client/config.yaml")
@@ -113,8 +113,14 @@ def update() -> None:
             data[i] = tuple(temp_data)
 
         # Calculating and drawing spectrogram when the measuring is finished
-        spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
+        spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data], interface.frequency.plot, config)
+        spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config)
+        spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config)
+        spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config)
         interface.frequency.canvas.draw()
+        interface.frequency_x.canvas.draw()
+        interface.frequency_y.canvas.draw()
+        interface.frequency_z.canvas.draw()
         interface.update()
 
     interface.window.after(1, update)

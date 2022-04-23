@@ -111,7 +111,6 @@ class USBCommunication:
             input = self.connection.read(self.calc_buffer_size(100, 10))
             bytes = base64.b64decode(input)
             data = []
-            print(bytes)
             for i in range(100):
                 time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
                 x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)

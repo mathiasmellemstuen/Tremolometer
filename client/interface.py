@@ -24,7 +24,7 @@ class GraphData:
         @params *data all data in as a tuple.
         """
         self.padding_value = 1.10
-        self.axis_color_and_direction = (((1.0, 0.0, 0.0), "x"), ((0.0, 1.0, 0.0), "y"), ((0.0, 0.0, 1.0), "z"))
+        self.axis_color_and_direction = (((1.0, 0.0, 0.0), "x"), ((0.0, 0.0, 1.0), "y"), ((0.0, 1.0, 0.0), "z"))
         self.figure = figure
         self.plot = plot
         self.canvas = canvas

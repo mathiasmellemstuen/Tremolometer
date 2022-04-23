@@ -16,11 +16,8 @@ def create_spectrogram_from_data(data: List[Data], graph: Figure, config: Config
     @param graph The given matplotlib figure to use as a spectrogram.
     @param config Configuration dict
     """
-    data_points = []
-    for i in data:
-        data_points.append(i[1])
 
-    data_points = np.asarray(data_points)
+    data_points = np.asarray(data)
     sampling_rate = 1/0.003
     segment_length = 200
     frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, mode="psd", scaling="density", nperseg=segment_length, nfft=100*segment_length, window=("tukey", 0.25), noverlap=100)
