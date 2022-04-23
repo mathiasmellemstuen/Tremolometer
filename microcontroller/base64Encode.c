@@ -1,18 +1,9 @@
 #include "base64Encode.h"
+#include "data.h"
 #include <malloc.h>
 
-/**
- * @brief Encode a char array to base 64.
- * Takes a char array, generated form the data buffer, and encodes all the characters to base64.
- * This algorithm is taken form: https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
- *
- * @param data Pointer to char array.
- * @param inputLength Length of char array.
- * @param outputLength Length of the resulting char array.
- * @return Pointer to char array.
- */
 char* encode(const unsigned char* data, size_t inputLength, size_t* outputLength) {
-    *outputLength = 4 * ((inputLength + 2) / 3);
+    *outputLength = calcOutputLen(inputLength);
 
     char *encodedData = malloc(*outputLength);
 

@@ -8,16 +8,16 @@ from config import read_config
 from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning, askquestion
 from timer import get_current_time_ms
+from statistics import mean
 import threading
 import spectrogram
 
 data = []
-
 """!Store data"""
 config: Config = read_config("client/config.yaml")
 usb_communication: USBCommunication = USBCommunication()
 # Creating test data
-#for i in range(0, 20000):
+# for i in range(0, 20000):
 #    if i < 5000:
 #        data.append((i, 1000 * math.sin(i * 0.006), 0, 0))
 #    elif i > 10000:
@@ -44,6 +44,7 @@ def start_button() -> None:
     else:
         showwarning(title="Ikke tilkoblet", message="Koble til tremolometer via USB og prøv igjen.")
 
+
 def restart_button() -> None:
     global data
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
@@ -53,6 +54,7 @@ def restart_button() -> None:
         interface.frequency.clear()
         interface.frequency.canvas.draw()
         start_button()
+
 
 def usb_thread() -> None:
     """
@@ -94,9 +96,22 @@ def update() -> None:
             device_was_connected = False
             showwarning("Frakoblet", "Tremolometer ble frakoblet")
 
+    # Run after the measuring is done
     if measuring and not len(data) == 0 and data[len(data) - 1][0] > config["maaletid"]:
         interface.finished_ui()
         measuring = False
+
+        # Normalize all axis
+        x_mean = mean(d[1] for d in data)
+        y_mean = mean(d[2] for d in data)
+        z_mean = mean(d[3] for d in data)
+
+        for i in range(len(data) - 1):
+            temp_data = list(data[i])
+            temp_data[1] = temp_data[1] - x_mean
+            temp_data[2] = temp_data[2] - y_mean
+            temp_data[3] = temp_data[3] - z_mean
+            data[i] = tuple(temp_data)
 
         # Calculating and drawing spectrogram when the measuring is finished
         spectrogram.create_spectrogram_from_data(data, interface.frequency.plot, config)
