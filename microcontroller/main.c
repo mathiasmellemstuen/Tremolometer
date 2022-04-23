@@ -11,7 +11,7 @@
 #include "time.h"
 
 #define BUFFER_SIZE 100 //!< Define the buffer size to use.
-#define WAIT_TIME 5     //!< Define how long between measurements (in ms).
+#define WAIT_TIME 3 //!< Define how long between measurements (in ms).
 // Define i2c instance
 i2c_inst_t* i2c;    //!< The i2c instance.
 
