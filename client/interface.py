@@ -10,7 +10,7 @@ from config import write_config
 from spectrogram import create_spectrogram_from_data
 from typing import Any, List
 from costumeTyping import Config, Data, Plot, Widget
-
+import numpy as np
 
 class GraphData:
     """!
@@ -101,10 +101,10 @@ class Interface:
 
 
         # For graph plotting data over time
-        self.data = self.create_graph(row=2, column=1, column_span=11, x_label="Tid (ms)", y_label="Bevegelse (mm)", fig_size_x=1920, fig_size_y=400, figure_dpi=96, x_axis_min=0, x_axis_max=20000, x_axis_step=1000)
+        self.data = self.create_graph(row=2, column=1, column_span=11, x_label="Tid (ms)", y_label="Bevegelse (mm)", fig_size_x=1920, fig_size_y=325, figure_dpi=96, x_axis_min=0, x_axis_max=20000, x_axis_step=1000)
 
         # For graph plotting frequency over time
-        self.frequency = self.create_graph(row=4, column=1, column_span=11, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=1920, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
+        self.frequency = self.create_graph(row=4, column=1, column_span=11, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=1920, fig_size_y=325, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
         self.frequency_x = self.create_graph(row=6, column=1, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
         self.frequency_y = self.create_graph(row=6, column=5, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
         self.frequency_z = self.create_graph(row=6, column=9, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
