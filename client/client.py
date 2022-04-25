@@ -52,7 +52,6 @@ def restart_button() -> None:
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
 
     if answer == "yes":
-
         data = []
 
         interface.frequency.clear()
@@ -102,7 +101,6 @@ def usb_thread() -> None:
                 data.extend(new_data)
                 last_packet_time = get_current_time_ms()
 
-
             interface.draw_data(data)
         elif not usb_communication.check_if_device_is_connected():
             usb_communication.search_for_comport()
@@ -146,10 +144,11 @@ def update() -> None:
             data[i] = tuple(temp_data)
 
         # Calculating and drawing spectrogram when the measuring is finished
-        spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data], interface.frequency.plot, config, "magma")
-        spectrogram.create_spectrogram_from_data(data=[d[1] for d in data], graph=interface.frequency_x.plot, config=config, cmap_color="Reds")
-        spectrogram.create_spectrogram_from_data(data=[d[2] for d in data], graph=interface.frequency_y.plot, config=config, cmap_color="Blues")
-        spectrogram.create_spectrogram_from_data(data=[d[3] for d in data], graph=interface.frequency_z.plot, config=config, cmap_color="Greens")
+        spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data],
+                                                 interface.frequency.plot, config, "magma")
+        spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config, "Reds")
+        spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config, "Blues")
+        spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config, "Greens")
         interface.frequency.canvas.draw()
         interface.frequency_x.canvas.draw()
         interface.frequency_y.canvas.draw()
