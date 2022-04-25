@@ -18,9 +18,8 @@ def create_spectrogram_from_data(data: List[Data], graph: Figure, config: Config
     """
 
     data_points = np.asarray(data)
-    sampling_rate = 1/0.003
-    segment_length = 500
-    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, nperseg=segment_length, nfft=1024)
+    sampling_rate = 1000
+    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, nperseg=1000)
     measuring_time = int(config["maaletid"] / 1000)
 
     frequencies_min = 0

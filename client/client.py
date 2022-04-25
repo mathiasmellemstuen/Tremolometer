@@ -83,7 +83,7 @@ def usb_thread() -> None:
             if new_data is not None:
 
                 # Filtering data....
-                filter_amount = 100
+                filter_amount = 300
                 data_x = filter.wavelet_denoise(np.array([d[1] for d in new_data]), "haar", filter_amount)
                 data_y = filter.wavelet_denoise(np.array([d[2] for d in new_data]), "haar", filter_amount)
                 data_z = filter.wavelet_denoise(np.array([d[3] for d in new_data]), "haar", filter_amount)
@@ -100,7 +100,7 @@ def usb_thread() -> None:
 
 
             interface.draw_data(data)
-        else:
+        elif not usb_communication.check_if_device_is_connected():
             usb_communication.search_for_comport()
 
 

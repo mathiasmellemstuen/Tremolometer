@@ -44,12 +44,14 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_NONE, timeout=1)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=1, baudrate=115200)
                 time.sleep(0.1)
                 temp_connection.flush()
                 temp_connection.write("T".encode())
                 time.sleep(0.1)
                 input = temp_connection.read(temp_connection.inWaiting())
+
+                print(input)
 
                 if input == b'':
                     temp_connection.close()
@@ -57,6 +59,7 @@ class USBCommunication:
 
                 if input == b'T':
                     self.connection = temp_connection
+                    self.connection.flush()
                     return port
 
                 temp_connection.close()

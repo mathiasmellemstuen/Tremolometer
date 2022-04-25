@@ -4,14 +4,13 @@
 #include "pico/multicore.h"
 #include "hardware/i2c.h"
 
-#include "led.h"
 #include "accelerometer.h"
 #include "data.h"
 #include "usbTransfer.h"
 #include "time.h"
 
 #define BUFFER_SIZE 100 //!< Define the buffer size to use.
-#define WAIT_TIME 3 //!< Define how long between measurements (in ms).
+#define WAIT_TIME 1 //!< Define how long between measurements (in ms).
 // Define i2c instance
 i2c_inst_t* i2c;    //!< The i2c instance.
 
@@ -54,7 +53,6 @@ void main2() {
 
         // Send the data from buffer
         sendData(sendingData, BUFFER_SIZE);
-        ledRGBSet(true, false, false);
     }
 }
 
@@ -62,7 +60,6 @@ int main(void) {
     // Init stuff
     usbInit();
     stdio_init_all();
-    ledRGBInit();
 
     i2c = i2c1;
     i2c_init(i2c, 400 * 1000);
@@ -74,15 +71,13 @@ int main(void) {
     multicore_fifo_drain();
     multicore_launch_core1(main2);
 
-    waitForHandshake();
+    //waitForHandshake();
 
     while (1) {
         // Wait for start signal and get the measurement time.
-        ledRGBSet(false, false, true);
         sleep_ms(1000);
         uint16_t runningTime = waitForStartSignal();
         runningTime = 20000;
-        ledRGBSet(false, true, false);
         // Start timing
         timeInit();
         uint32_t endTime = runningTime + timeSinceStart();
