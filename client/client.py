@@ -82,6 +82,10 @@ def usb_thread() -> None:
 
             if new_data is not None:
 
+                for d in new_data:
+                    if d[1] == 0 and d[2] == 0 and d[3] == 0:
+                        new_data.pop(d)
+
                 # Filtering data....
                 filter_amount = 300
                 data_x = filter.wavelet_denoise(np.array([d[1] for d in new_data]), "haar", filter_amount)
