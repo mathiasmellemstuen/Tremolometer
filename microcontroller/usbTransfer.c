@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include "led.h"
 
 void usbInit() {
     stdio_init_all();
@@ -50,10 +49,11 @@ int16_t waitForStartSignal() {
             break;
 
         } else if(character == 'E') { // Exit signal
-            ledRGBSet(true, true, true);
-            waitForHandshake();
             waitForStartSignal();
             return 0;
+        } else if(character == 'T') {
+            printf("T");
+            fflush(stdout);
         }
     }
 

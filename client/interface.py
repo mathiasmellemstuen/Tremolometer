@@ -10,9 +10,7 @@ from config import write_config
 from spectrogram import create_spectrogram_from_data
 from typing import Any, List, Tuple
 from costumeTyping import Config, Data, Plot, Widget
-
-import matplotlib.pyplot as plt
-
+import numpy as np
 
 class GraphData:
     """!

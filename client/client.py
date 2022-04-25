@@ -12,6 +12,8 @@ from statistics import mean
 import threading
 import spectrogram
 import numpy as np
+import filter
+
 data = []
 """!Store data"""
 config: Config = read_config("client/config.yaml")
@@ -50,9 +52,19 @@ def restart_button() -> None:
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
 
     if answer == "yes":
+
         data = []
+
         interface.frequency.clear()
+        interface.frequency_x.clear()
+        interface.frequency_y.clear()
+        interface.frequency_z.clear()
+
         interface.frequency.canvas.draw()
+        interface.frequency_x.canvas.draw()
+        interface.frequency_y.canvas.draw()
+        interface.frequency_z.canvas.draw()
+
         start_button()
 
 
@@ -62,16 +74,33 @@ def usb_thread() -> None:
 
     """
     global last_packet_time
+    global data
 
     while run_usb_thread:
         if usb_communication.check_if_device_is_connected() and measuring:
             new_data = usb_communication.read()
+
             if new_data is not None:
+
+                # Filtering data....
+                filter_amount = 300
+                data_x = filter.wavelet_denoise(np.array([d[1] for d in new_data]), "haar", filter_amount)
+                data_y = filter.wavelet_denoise(np.array([d[2] for d in new_data]), "haar", filter_amount)
+                data_z = filter.wavelet_denoise(np.array([d[3] for d in new_data]), "haar", filter_amount)
+
+                for i in range(len(new_data)):
+                    temp_data = list(new_data[i])
+                    temp_data[1] = data_x[i]
+                    temp_data[2] = data_y[i]
+                    temp_data[3] = data_z[i]
+                    new_data[i] = tuple(temp_data)
+
                 data.extend(new_data)
                 last_packet_time = get_current_time_ms()
 
+
             interface.draw_data(data)
-        else:
+        elif not usb_communication.check_if_device_is_connected():
             usb_communication.search_for_comport()
 
 
@@ -113,10 +142,10 @@ def update() -> None:
             data[i] = tuple(temp_data)
 
         # Calculating and drawing spectrogram when the measuring is finished
-        spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data], interface.frequency.plot, config)
-        spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config)
-        spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config)
-        spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config)
+        spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data], interface.frequency.plot, config, "magma")
+        spectrogram.create_spectrogram_from_data(data=[d[1] for d in data], graph=interface.frequency_x.plot, config=config, cmap_color="Reds")
+        spectrogram.create_spectrogram_from_data(data=[d[2] for d in data], graph=interface.frequency_y.plot, config=config, cmap_color="Blues")
+        spectrogram.create_spectrogram_from_data(data=[d[3] for d in data], graph=interface.frequency_z.plot, config=config, cmap_color="Greens")
         interface.frequency.canvas.draw()
         interface.frequency_x.canvas.draw()
         interface.frequency_y.canvas.draw()
