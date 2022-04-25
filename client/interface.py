@@ -12,6 +12,7 @@ from typing import Any, List, Tuple
 from costumeTyping import Config, Data, Plot, Widget
 import numpy as np
 
+
 class GraphData:
     """!
     Container class for graph data. Used to display the raw data and the frequency.
@@ -108,14 +109,16 @@ class Interface:
         self.menu.add_cascade(label="Fil", menu=self.settings_menu)
         self.window.configure(bg="white", menu=self.menu)
 
+        graph_len = int(config['maaletid'])
         # For graph plotting data over time
-        self.data = GraphData(2, 1, 11, 1920, 400, 0, 20000, 1000, self.window, "Tid (ms)", "Bevegelse (mm)")
+        self.data = GraphData(2, 1, 11, 1920, 400, 0, graph_len, 1000, self.window, "Tid (ms)", "Bevegelse (mm)")
 
+        graph_len = int(graph_len / 1000)
         # For graph plotting frequency over time
-        self.frequency = GraphData(4, 1, 11, 1920, 250, 0, 20, 1, self.window)
-        self.frequency_x = GraphData(6, 1, 4, 640, 250, 0, 20, 1, self.window)
-        self.frequency_y = GraphData(6, 5, 4, 640, 250, 0, 20, 1, self.window)
-        self.frequency_z = GraphData(6, 9, 4, 640, 250, 0, 20, 1, self.window)
+        self.frequency = GraphData(4, 1, 11, 1920, 250, 0, graph_len, 1, self.window)
+        self.frequency_x = GraphData(6, 1, 4, 640, 250, 0, graph_len, 1, self.window)
+        self.frequency_y = GraphData(6, 5, 4, 640, 250, 0, graph_len, 1, self.window)
+        self.frequency_z = GraphData(6, 9, 4, 640, 250, 0, graph_len, 1, self.window)
 
         Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center") \
             .grid(row=3, column=1, columnspan=11, sticky="news")
