@@ -8,28 +8,38 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from config import write_config
 from spectrogram import create_spectrogram_from_data
-from typing import Any, List
+from typing import Any, List, Tuple
 from costumeTyping import Config, Data, Plot, Widget
+
+import matplotlib.pyplot as plt
 
 
 class GraphData:
     """!
     Container class for graph data. Used to display the raw data and the frequency.
     """
-    def __init__(self, x_axis_min: int, x_axis_max: int, x_axis_step:int, x_label: str, y_label: str, config: Config, figure: Figure, plot: Plot, canvas: FigureCanvasTkAgg, widget: Widget) -> None:
+
+    def __init__(self, row: int, column: int, column_span: int,
+                 fig_size_x: int, fig_size_y: int, x_axis_min: int, x_axis_max: int, x_axis_step: int,
+                 window, x_label='Tid (s)', y_label='Frekvens (Hz)') -> None:
         """!
         Constructor.
 
         @params self Pointer to self.
         @params *data all data in as a tuple.
         """
+        self.figure = Figure(figsize=(fig_size_x / 96, fig_size_y / 96), dpi=96)
+        self.plot = self.figure.add_subplot(111, xlabel=x_label, ylabel=y_label)
+        self.plot.grid(color='gray', linestyle='dashed')
+
+        self.figure.tight_layout()
+
+        self.canvas = FigureCanvasTkAgg(self.figure, master=window)
+        self.widget = self.canvas.get_tk_widget()
+        self.widget.grid(column=column, row=row, columnspan=column_span, sticky=W + E)
+
         self.padding_value = 1.10
         self.axis_color_and_direction = (((1.0, 0.0, 0.0), "x"), ((0.0, 0.0, 1.0), "y"), ((0.0, 1.0, 0.0), "z"))
-        self.figure = figure
-        self.plot = plot
-        self.canvas = canvas
-        self.widget = widget
-        self.config = config
         self.x_label = x_label
         self.y_label = y_label
         self.x_axis_min = x_axis_min
@@ -66,9 +76,10 @@ class GraphData:
             self.plot.set_ylim(min_value, max_value)
 
             for i in range(0, len(data[0]) - 1):
-                self.plot.plot([element[0] for element in data], [element[i + 1] for element in data], color=self.axis_color_and_direction[i][0], label=self.axis_color_and_direction[i][1])
+                self.plot.plot([element[0] for element in data], [element[i + 1] for element in data],
+                               color=self.axis_color_and_direction[i][0], label=self.axis_color_and_direction[i][1])
 
-            self.plot.legend() # Adding a legend to the plot
+            self.plot.legend()  # Adding a legend to the plot
 
         self.canvas.draw()
 
@@ -99,28 +110,31 @@ class Interface:
         self.menu.add_cascade(label="Fil", menu=self.settings_menu)
         self.window.configure(bg="white", menu=self.menu)
 
-
         # For graph plotting data over time
-        self.data = self.create_graph(row=2, column=1, column_span=11, x_label="Tid (ms)", y_label="Bevegelse (mm)", fig_size_x=1920, fig_size_y=400, figure_dpi=96, x_axis_min=0, x_axis_max=20000, x_axis_step=1000)
+        self.data = GraphData(2, 1, 11, 1920, 400, 0, 20000, 1000, self.window, "Tid (ms)", "Bevegelse (mm)")
 
         # For graph plotting frequency over time
-        self.frequency = self.create_graph(row=4, column=1, column_span=11, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=1920, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
-        self.frequency_x = self.create_graph(row=6, column=1, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
-        self.frequency_y = self.create_graph(row=6, column=5, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
-        self.frequency_z = self.create_graph(row=6, column=9, column_span=4, x_label="Tid (s)", y_label="Frekvens (Hz)", fig_size_x=640, fig_size_y=250, figure_dpi=96, x_axis_min=0, x_axis_max=20, x_axis_step=1)
+        self.frequency = GraphData(4, 1, 11, 1920, 250, 0, 20, 1, self.window)
+        self.frequency_x = GraphData(6, 1, 4, 640, 250, 0, 20, 1, self.window)
+        self.frequency_y = GraphData(6, 5, 4, 640, 250, 0, 20, 1, self.window)
+        self.frequency_z = GraphData(6, 9, 4, 640, 250, 0, 20, 1, self.window)
 
-        self.frequency_graph_header = Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center").grid(row=3, column=1, columnspan=11, sticky="news")
-        self.frequency_graph_x_header = Label(text="Spektrogram for x-aksen", background="white", foreground="red", anchor="center").grid(row=5, column=1, columnspan=4)
-        self.frequency_graph_y_header = Label(text="Spektrogram for y-aksen", background="white", foreground="blue", anchor="center").grid(row=5, column=5, columnspan=4)
-        self.frequency_graph_z_header = Label(text="Spektrogram for z-aksen", background="white", foreground="green", anchor="center").grid(row=5, column=9, columnspan=4)
+        Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center") \
+            .grid(row=3, column=1, columnspan=11, sticky="news")
+        Label(text="Spektrogram for x-aksen", background="white", foreground="red", anchor="center") \
+            .grid(row=5, column=1, columnspan=4)
+        Label(text="Spektrogram for y-aksen", background="white", foreground="blue", anchor="center") \
+            .grid(row=5, column=5, columnspan=4)
+        Label(text="Spektrogram for z-aksen", background="white", foreground="green", anchor="center") \
+            .grid(row=5, column=9, columnspan=4)
+        Label(text="Data", background="white", foreground="black", anchor="center") \
+            .grid(row=1, column=1, columnspan=11, sticky="news")
 
-        self.title = Label(text="Data", background="white", foreground="black", anchor="center")
         self.connection_label = Label(text="Tilkoblet", background="white", foreground="green", anchor="e", padx=25)
-        self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black")
-
-        self.start_button.grid(row=1, column=1, sticky="news", padx=20, pady=20)
         self.connection_label.grid(row=1, column=11, sticky="news")
-        self.title.grid(row=1, column=1, columnspan=11, sticky="news")
+
+        self.start_button = Button(text="Start", padx=10, pady=10, background="white", foreground="black")
+        self.start_button.grid(row=1, column=1, sticky="news", padx=20, pady=20)
 
         self.data.draw([])
         self.frequency.draw([])
@@ -181,7 +195,7 @@ class Interface:
         """
         self.connection_label.configure(text=text, foreground=foreground)
 
-        #self.frequency_label.grid(column=12, row=2, sticky="n", padx=20, pady=20)
+        # self.frequency_label.grid(column=12, row=2, sticky="n", padx=20, pady=20)
 
     def finished_ui(self) -> None:
         """!
@@ -210,29 +224,3 @@ class Interface:
         """
         self.update_method()
         self.window.mainloop()
-
-    def create_graph(self, row: int, column: int, column_span: int, x_label: str, y_label: str, fig_size_x: int, fig_size_y: int, figure_dpi: int, x_axis_min: int, x_axis_max: int, x_axis_step:int) -> GraphData:
-        """!
-        Create a graph window.
-
-        @param self Pointer to self.
-        @param row The number of rows
-        @param x_label Label for x-axis
-        @param y_label Label for y-axis
-        @param time_full_time Show X axis if True. Show something else if False...
-
-        @return Graph_data object
-        """
-        figure = Figure(figsize=(fig_size_x / figure_dpi, fig_size_y / figure_dpi), dpi=figure_dpi)
-        plot = figure.add_subplot(111)
-        plot.set_xlabel(x_label)
-        plot.set_ylabel(y_label)
-        plot.grid(color='gray', linestyle='dashed')
-
-        figure.tight_layout()
-
-        canvas = FigureCanvasTkAgg(figure, master=self.window)
-        widget = canvas.get_tk_widget()
-        widget.grid(column=column, row=row, columnspan=column_span, sticky=W + E)
-
-        return GraphData(x_axis_min=x_axis_min, x_axis_max=x_axis_max, x_axis_step=x_axis_step, x_label=x_label, y_label=y_label, config=self.config, figure=figure, plot=plot, canvas=canvas, widget=widget)
