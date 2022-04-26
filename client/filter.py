@@ -1,17 +1,11 @@
 import numpy as np
-import scipy
-import pywt
+from scipy.signal import butter, lfilter
+from scipy.signal import freqs
 
+def butter_lowpass(cutoff, fs, order=5):
+    return butter(order, cutoff, fs=fs, btype='low', analog=False)
 
-def wavelet_denoise(data, wavelet, noise_sigma):
-    wavelet = pywt.Wavelet(wavelet)
-    levels = min(15, (np.floor(np.log2(data.shape[0]))).astype(int))
-
-    # Francisco's code used wavedec2 for image data
-    wavelet_coeffs = pywt.wavedec(data, wavelet, level=levels)
-    threshold = noise_sigma * np.sqrt(2 * np.log2(data.size))
-
-    new_wavelet_coeffs = map(lambda x: pywt.threshold(x, threshold, mode='soft'),
-                             wavelet_coeffs)
-
-    return pywt.waverec(list(new_wavelet_coeffs), wavelet)
+def lowpass_filter(data, cutoff, fs, order=5):
+    b, a = butter_lowpass(cutoff=cutoff, fs=fs, order=order)
+    y = lfilter(b, a, data)
+    return y

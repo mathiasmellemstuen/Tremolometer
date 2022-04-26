@@ -81,22 +81,11 @@ def usb_thread() -> None:
 
             if new_data is not None:
 
+
+
                 for d in new_data:
                     if d[1] == 0 and d[2] == 0 and d[3] == 0:
                         new_data.pop(d)
-
-                # Filtering data....
-                filter_amount = 300
-                data_x = filter.wavelet_denoise(np.array([d[1] for d in new_data]), "haar", filter_amount)
-                data_y = filter.wavelet_denoise(np.array([d[2] for d in new_data]), "haar", filter_amount)
-                data_z = filter.wavelet_denoise(np.array([d[3] for d in new_data]), "haar", filter_amount)
-
-                for i in range(len(new_data)):
-                    temp_data = list(new_data[i])
-                    temp_data[1] = data_x[i]
-                    temp_data[2] = data_y[i]
-                    temp_data[3] = data_z[i]
-                    new_data[i] = tuple(temp_data)
 
                 data.extend(new_data)
                 last_packet_time = get_current_time_ms()
@@ -142,6 +131,19 @@ def update() -> None:
             temp_data[2] = temp_data[2] - y_mean
             temp_data[3] = temp_data[3] - z_mean
             data[i] = tuple(temp_data)
+
+        data_x = filter.lowpass_filter(np.array([d[1] for d in data]), 10, 40)
+        data_y = filter.lowpass_filter(np.array([d[2] for d in data]), 10, 40)
+        data_z = filter.lowpass_filter(np.array([d[3] for d in data]), 10, 40)
+
+        for i in range(len(data)):
+            temp_data = list(data[i])
+            temp_data[1] = data_x[i]
+            temp_data[2] = data_y[i]
+            temp_data[3] = data_z[i]
+            data[i] = tuple(temp_data)
+
+        interface.draw_data(data)
 
         # Calculating and drawing spectrogram when the measuring is finished
         spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data],

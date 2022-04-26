@@ -114,7 +114,7 @@ class USBCommunication:
             return None
 
         if self.connection.inWaiting() > 0:
-            num_packages = int(config['antallPakker'])
+            num_packages = int(self.config['antallPakker'])
             input = self.connection.read(self.calc_buffer_size(num_packages, 10))
             bytes = base64.b64decode(input)
             data = []
