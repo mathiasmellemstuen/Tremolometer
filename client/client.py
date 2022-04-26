@@ -80,7 +80,6 @@ def usb_thread() -> None:
             new_data = usb_communication.read()
 
             if new_data is not None:
-
                 for d in new_data:
                     if d[1] == 0 and d[2] == 0 and d[3] == 0:
                         new_data.pop(d)
@@ -158,10 +157,6 @@ def update() -> None:
     interface.window.after(1, update)
 
 
-usb_thread = threading.Thread(target=usb_thread)
-usb_thread.start()
-
-
 def on_exit() -> None:
     """
     Handle when the program exits.
@@ -178,6 +173,10 @@ def on_exit() -> None:
     interface.window.destroy()
 
 
-interface.window.protocol("WM_DELETE_WINDOW", on_exit)
-interface.set_methods(start_button, update, restart_button)
-interface.update()
+if __name__ == '__main__':
+    usb_thread = threading.Thread(target=usb_thread)
+    usb_thread.start()
+
+    interface.window.protocol("WM_DELETE_WINDOW", on_exit)
+    interface.set_methods(start_button, update, restart_button)
+    interface.update()
