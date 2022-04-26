@@ -9,9 +9,9 @@
 #include "usbTransfer.h"
 #include "time.h"
 
-#define BUFFER_SIZE 100 //!< Define the buffer size to use.
-#define WAIT_TIME 1 //!< Define how long between measurements (in ms).
-// Define i2c instance
+#define BUFFER_SIZE 64   //!< Define the buffer size to use.
+#define WAIT_TIME 25     //!< Define how long between measurements (in ms).
+
 i2c_inst_t* i2c;    //!< The i2c instance.
 
 // Define data buffer 1 and 2

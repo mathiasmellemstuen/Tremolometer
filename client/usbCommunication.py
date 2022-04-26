@@ -114,10 +114,11 @@ class USBCommunication:
             return None
 
         if self.connection.inWaiting() > 0:
-            input = self.connection.read(self.calc_buffer_size(100, 10))
+            num_packages = int(config['antallPakker'])
+            input = self.connection.read(self.calc_buffer_size(num_packages, 10))
             bytes = base64.b64decode(input)
             data = []
-            for i in range(100):
+            for i in range(num_packages):
                 time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
                 x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)
                 y = int.from_bytes(bytes[10 * i + 6: 10 * i + 8], byteorder="big", signed=True)
