@@ -23,16 +23,21 @@ class USBCommunication:
 
         @param self Pointer to self.
         """
+
+        ## Holds a serial connection object that represents the serial connection over USB to the microcontroller.
         self.connection = None
+
+        ## Configuration from the configuration file (config.yaml)
         self.config = config
+
+        ## Comport prefix (nt if the os is windows and /dev/ if the os is linux or macOS)
         self.connection_port_prefix = "" if os.name == "nt" else "/dev/"
 
     def search_for_comport(self) -> Optional[ListPortInfo]:
         """!
         Find the COM port the device is connected to.
-
         Test all COM ports to find the port the microcontroller is connected to.
-        This is determent by sending a bite, then checking if the received bite is bite value '2'.
+        This is determined by sending a byte (b'!'), then checking if the received byte is the same (b'!').
 
         @param self Pointer to self.
         """
