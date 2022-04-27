@@ -1,5 +1,5 @@
 """!
-Costume types to use in the code
+Custom types to use in the code
 """
 from typing import TypeVar, Any, Tuple
 

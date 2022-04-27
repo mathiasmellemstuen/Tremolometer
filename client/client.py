@@ -3,7 +3,7 @@ Handle the client.
 """
 from tkinter.messagebox import showwarning, askquestion
 from config import read_config
-from costumeTyping import Config
+from customTypes import Config
 from interface import Interface
 from timer import get_current_time_ms
 from usbCommunication import USBCommunication

@@ -1,5 +1,5 @@
-maaletid: 20
 antallPakker: 64
-frekvens_min: 0
 frekvens_maks: 20
+frekvens_min: 0
+maaletid: 15
 spektrogram_maske: 0
