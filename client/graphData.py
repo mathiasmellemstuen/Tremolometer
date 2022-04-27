@@ -1,7 +1,7 @@
 """!
 Handle a single graph in the GUI.
 """
-from tkinter import W, E
+from tkinter import W, E, Tk
 from typing import List
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -13,7 +13,7 @@ class GraphData:
     Container class for graph data. Used to display the raw data and the frequency.
     """
     def __init__(self, row: int, column: int, column_span: int,
-                 fig_size_x: int, fig_size_y: int, window, x_axis_max: int,
+                 fig_size_x: int, fig_size_y: int, window: Tk, x_axis_max: int,
                  x_axis_min=0, x_axis_step=1,
                   x_label='Tid (s)', y_label='Frekvens (Hz)') -> None:
         """!
@@ -50,7 +50,13 @@ class GraphData:
         self.x_axis_max = x_axis_max
         self.x_axis_step = x_axis_step
 
-    def set_x_axis_max(self, new_x_axis_max):
+    def set_x_axis_max(self, new_x_axis_max) -> None:
+        """!
+        Sett a new max x-axis value.
+
+        @param self Pointer to self.
+        @param new_x_axis_max The new x-axis value.
+        """
         self.x_axis_max = new_x_axis_max
         self.draw([])
 

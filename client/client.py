@@ -13,14 +13,28 @@ import filter
 import spectrogram
 import numpy as np
 
+## Measurement data.
 data = []
+
+## Config data.
 config: Config = read_config("client/config.yaml")
+
+## Communication connection to the microcontroller.
 usb_communication: USBCommunication = USBCommunication()
 
+## GUI.
 interface = Interface(config)
+
+## Microcontroller has been connected.
 device_was_connected = False
+
+## Microcontroller and Client are communicating measurements.
 measuring = False
+
+## The USB thread is currently running.
 run_usb_thread = True
+
+## Last packet time
 last_packet_time = 0
 
 
