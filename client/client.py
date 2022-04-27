@@ -5,6 +5,8 @@ communication thread.
 from tkinter.messagebox import showwarning, askquestion
 from interface import Interface
 from usbCommunication import USBCommunication
+from config import Config
+
 import threading
 import filter
 import spectrogram
@@ -14,10 +16,10 @@ import numpy as np
 data = []
 
 ## Dict of data from the configuration file (config.yaml).
-config: Config = read_config("client/config.yaml")
+config = Config("client/config.yaml")
 
 ## Initialization of USB Communication connection to the microcontroller.
-usb_communication: USBCommunication = USBCommunication()
+usb_communication: USBCommunication = USBCommunication(config)
 
 ## Initialization of the user interface.
 interface = Interface(config)
@@ -95,8 +97,19 @@ def usb_thread() -> None:
 
             # Updating the user interface with the received data
             interface.draw_data(data)
+            
         elif usb_communication.check_if_device_is_connected():
-            usb_communication.ping()
+            status, in_data = usb_communication.ping()
+
+            if not status and len(in_data) > 10:
+                new_data = usb_communication.read_from_data(in_data)
+
+                for d in new_data:
+                    if d[1] == 0 and d[2] == 0 and d[3] == 0:
+                        del d
+
+                data.extend(new_data)
+
         elif not usb_communication.check_if_device_is_connected():
             # Searching for a USB connection
             usb_communication.search_for_comport()
