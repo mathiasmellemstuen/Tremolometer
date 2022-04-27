@@ -9,7 +9,10 @@
  * @brief Init USB things.
  * Initialize all things to do with the USB communication.
  */
-void usbInit();
+static inline void usbInit() {
+    stdio_init_all();
+    stdio_flush();
+}
 
 /**
  * @brief Send a data buffer over STDOUT.
@@ -33,10 +36,5 @@ int16_t waitForStartSignal();
  * Waits until byte 1 is received on STDIN. Then continues.
  */
 void waitForHandshake();
-
-/* Procedure:
- * 1. Get measuring time (ms) form GUI
- * 2. Send package size to GUI
- */
 
 #endif //TREMOLOMETER_USBTRANSFER_H

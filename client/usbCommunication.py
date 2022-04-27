@@ -3,7 +3,6 @@ Documentation for this module.
 
 More details.
 """
-
 import time
 from typing import Optional, List
 from costumeTyping import Data
@@ -21,7 +20,6 @@ class USBCommunication:
     """!
     Handle USB communication with microcontroller.
     """
-
     def __init__(self) -> None:
         """!
         Constructor

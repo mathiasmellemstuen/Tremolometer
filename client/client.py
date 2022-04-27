@@ -1,16 +1,17 @@
 """!
 Handle the client.
 """
-import threading
 from tkinter.messagebox import showwarning, askquestion
-import numpy as np
-import filter
-import spectrogram
 from config import read_config
 from costumeTyping import Config
 from interface import Interface
 from timer import get_current_time_ms
 from usbCommunication import USBCommunication
+
+import threading
+import filter
+import spectrogram
+import numpy as np
 
 data = []
 config: Config = read_config("client/config.yaml")
@@ -44,24 +45,14 @@ def restart_button() -> None:
     if answer == "yes":
         data = []
 
-        interface.frequency.clear()
-        interface.frequency_x.clear()
-        interface.frequency_y.clear()
-        interface.frequency_z.clear()
-
-        interface.frequency.canvas.draw()
-        interface.frequency_x.canvas.draw()
-        interface.frequency_y.canvas.draw()
-        interface.frequency_z.canvas.draw()
+        interface.clear_all()
+        interface.draw_all()
 
         interface.frequency_label.configure(text=f'Spektrogram for alle aksene')
         interface.frequency_label_x.configure(text=f'Spektrogram for x-aksen')
         interface.frequency_label_y.configure(text=f'Spektrogram for y-aksen')
         interface.frequency_label_z.configure(text=f'Spektrogram for z-aksen')
-        interface.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
-        interface.frequency_label_x.grid(row=5, column=1, columnspan=4)
-        interface.frequency_label_y.grid(row=5, column=5, columnspan=4)
-        interface.frequency_label_z.grid(row=5, column=9, columnspan=4)
+        interface.reset_labels()
 
         start_button()
 
@@ -116,15 +107,15 @@ def update() -> None:
         measuring = False
 
         # Normalize all axis
-        x_mean = min(d[1] for d in data)
-        y_mean = min(d[2] for d in data)
-        z_mean = min(d[3] for d in data)
+        x_min = min(d[1] for d in data)
+        y_min = min(d[2] for d in data)
+        z_min = min(d[3] for d in data)
 
         for i in range(len(data) - 1):
             temp_data = list(data[i])
-            temp_data[1] = temp_data[1] - x_mean
-            temp_data[2] = temp_data[2] - y_mean
-            temp_data[3] = temp_data[3] - z_mean
+            temp_data[1] = temp_data[1] - x_min
+            temp_data[2] = temp_data[2] - y_min
+            temp_data[3] = temp_data[3] - z_min
             data[i] = tuple(temp_data)
 
         data_x = filter.low_pass_filter(np.array([d[1] for d in data]), 19.9, 40)
@@ -146,17 +137,18 @@ def update() -> None:
         for i in range(len(three_axial_length_data) - 1):
             three_axial_length_data[i] = three_axial_length_data[i] - three_axial_length_data_mean
 
-        strongest_frequency = spectrogram.create_spectrogram_from_data(three_axial_length_data, interface.frequency.plot, config, "hot")
-        strongest_frequency_x = spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config, "hot")
-        strongest_frequency_y = spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config, "hot")
-        strongest_frequency_z = spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config, "hot")
+        strongest_frequency = spectrogram.create_spectrogram_from_data(three_axial_length_data,
+                                                                       interface.frequency.plot, config)
+        strongest_frequency_x = spectrogram.create_spectrogram_from_data([d[1] for d in data],
+                                                                         interface.frequency_x.plot, config)
+        strongest_frequency_y = spectrogram.create_spectrogram_from_data([d[2] for d in data],
+                                                                         interface.frequency_y.plot, config)
+        strongest_frequency_z = spectrogram.create_spectrogram_from_data([d[3] for d in data],
+                                                                         interface.frequency_z.plot, config)
 
-        interface.frequency.canvas.draw()
-        interface.frequency_x.canvas.draw()
-        interface.frequency_y.canvas.draw()
-        interface.frequency_z.canvas.draw()
+        interface.draw_all()
 
-        interface.finished_ui(frequency_all=strongest_frequency, frequency_x=strongest_frequency_x, frequency_y=strongest_frequency_y, frequency_z=strongest_frequency_z)
+        interface.finished_ui(strongest_frequency, strongest_frequency_x, strongest_frequency_y, strongest_frequency_z)
         interface.update()
 
     interface.window.after(1, update)

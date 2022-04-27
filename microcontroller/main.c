@@ -26,7 +26,6 @@ uint8_t bufferInUse;    //!< Indicate what buffer is being used to write measure
 uint8_t bufferIndex;    //!< Where in the buffer data is being stored to.
 
 void main2() {
-
     multicore_fifo_drain();
 
     while (1) {

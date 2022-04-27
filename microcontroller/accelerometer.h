@@ -125,7 +125,9 @@ int16_t readData(i2c_inst_t *i2c, uint8_t reg);
  * @param addr Address to test.
  * @return True if the address is reserved.
  */
-bool reservedAddr(uint8_t addr);
+static inline bool reservedAddr(uint8_t addr) {
+    return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
+}
 
 /**
  * @brief Print i2c connection status off all ports.

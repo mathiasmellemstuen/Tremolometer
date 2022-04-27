@@ -83,17 +83,12 @@ int16_t readData(i2c_inst_t *i2c, uint8_t reg) {
     return (int16_t)((msb << 8) | lsb);
 }
 
-bool reservedAddr(uint8_t addr) {
-    return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
-}
-
 void busScan(i2c_inst_t *i2c) {
     printf("\nI2C Bus Scan\n");
     printf("  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
     for (int addr = 0; addr < (1 << 7); ++addr) {
-        if(addr%16==0) {
+        if (addr%16==0)
             printf("%02x ", addr);
-        }
 
         int ret;
         uint8_t rxdata;

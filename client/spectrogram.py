@@ -1,13 +1,16 @@
 from matplotlib.figure import Figure
 from scipy import signal
-import numpy as np
-from typing import List
+from typing import List, Any
 from costumeTyping import Data, Config
+
+import numpy as np
+
 
 def calculate_strongest_spectrogram_frequency(Sxx, frequencies_max):
     row_sums = [sum(row) for row in Sxx]
     max_sum_index = row_sums.index(max(row_sums))
     return (frequencies_max * max_sum_index) / len(row_sums)
+
 
 def mask_spectrogram(Sxx, mask_percentage):
     max_value = np.amax(Sxx)
@@ -18,7 +21,8 @@ def mask_spectrogram(Sxx, mask_percentage):
                 Sxx[i][j] = 0
     return Sxx
 
-def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Config, cmap_color: str) -> None:
+
+def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Config, cmap_color="hot") -> Any:
     """!
     Create spectrogram figure for the GUI based on the Data measured.
 
@@ -29,7 +33,8 @@ def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Confi
 
     data_points = np.asarray(data)
     sampling_rate = 1 / 0.025
-    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, scaling="spectrum", mode="magnitude", nperseg=40, nfft=256)
+    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, scaling="spectrum", mode="magnitude",
+                                                nperseg=40, nfft=256)
 
     measuring_time = int(config["maaletid"])
     frequencies_min = int(config["frekvens_min"])
@@ -46,4 +51,4 @@ def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Confi
     figure.pcolormesh(time, frequencies, Sxx, antialiased=False, cmap=cmap_color)
     figure.axes.grid(color='white', linestyle='dashed')
 
-    return calculate_strongest_spectrogram_frequency(Sxx=Sxx, frequencies_max=frequencies_max)
+    return calculate_strongest_spectrogram_frequency(Sxx, frequencies_max)

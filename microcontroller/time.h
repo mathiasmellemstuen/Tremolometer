@@ -12,7 +12,9 @@ static uint32_t startTime; //!< Store the time timeInit() was called.
  * @brief Set startTime to time since boot
  * Set startTime to current time since boot.
  */
-void timeInit();
+static inline void timeInit() {
+    startTime = to_ms_since_boot(get_absolute_time());
+}
 
 /**
  * @brief Calc time since timeInit().
@@ -20,6 +22,8 @@ void timeInit();
  *
  * @return Time since timeInit() in ms.
  */
-uint32_t timeSinceStart();
+static inline uint32_t timeSinceStart() {
+    return to_ms_since_boot(get_absolute_time()) - startTime;
+}
 
 #endif //TREMOLOMETER_TIME_H

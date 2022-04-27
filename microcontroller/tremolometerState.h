@@ -11,4 +11,5 @@ enum TremolometerState {
         BUFFER_FILLING=2,   //!< The microcontroller is filling the data buffer
         BUFFER_FULL=3       //!< The microcontroller has a full data buffer
 };
+
 #endif //TREMOLOMETER_TREMOLOMETERSTATE_H

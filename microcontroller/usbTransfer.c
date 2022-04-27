@@ -4,11 +4,6 @@
 #include <malloc.h>
 #include <stdlib.h>
 
-void usbInit() {
-    stdio_init_all();
-    stdio_flush();
-}
-
 void sendData(struct Data* data, int n) {
     // Splitting the data object into array of bytes
     unsigned char bytes[DATA_STRUCT_SIZE * n];
@@ -40,33 +35,29 @@ void sendData(struct Data* data, int n) {
 }
 
 int16_t waitForStartSignal() {
-    while(true) {
+    while (true) {
         stdio_init_all();
         char character = getchar() - 32;
 
-        if(character >= 2) {        // Start signal
+        if (character >= 2)          // Start signal
             return character - 2;
-        } else if(character == 0) { // Exit signal
+        else if (character == 0) {   // Exit signal
             waitForStartSignal();
             return 0;
-        } else if(character == 1) { // Sync signal
+        } else if (character == 1) { // Sync signal
             printf("!");
             fflush(stdout);
         }
     }
-    return 0;
 }
 
 void waitForHandshake() {
-    while(true) {
+    while (true) {
         stdio_init_all();
-        char character = getchar();
 
-        if(character == '!') {
+        if (getchar() == '!')
             break;
-        }
     }
-
     printf("!");
     fflush(stdout);
 }
