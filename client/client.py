@@ -2,11 +2,10 @@
 Handle the client.
 """
 from tkinter.messagebox import showwarning, askquestion
-from config import read_config
-from customTypes import Config
 from interface import Interface
 from timer import get_current_time_ms
 from usbCommunication import USBCommunication
+from config import Config
 
 import threading
 import filter
@@ -17,10 +16,10 @@ import numpy as np
 data = []
 
 ## Config data.
-config: Config = read_config("client/config.yaml")
+config = Config("client/config.yaml")
 
 ## Communication connection to the microcontroller.
-usb_communication: USBCommunication = USBCommunication()
+usb_communication: USBCommunication = USBCommunication(config)
 
 ## GUI.
 interface = Interface(config)

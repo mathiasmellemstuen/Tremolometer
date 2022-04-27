@@ -3,7 +3,6 @@ Handle GUI.
 """
 from tkinter import *
 from typing import Any, List
-from config import write_config
 from customTypes import Config, Data
 from graphData import GraphData
 
@@ -12,20 +11,18 @@ class Interface:
     """!
     Handle the user interface.
     """
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config) -> None:
         """!
         Init all the window things.
 
         @param self Pointer to self.
-        @param config Pointer to configuration.
         """
         self.window = Tk()
         self.window.title("Tremolometer")
-
+        self.config = config
         self.start_method = None
         self.update_method = None
         self.restart_method = None
-        self.config = config
         self.menu = Menu(self.window)
         self.settings_menu = Menu(self.menu, tearoff=False)
         self.settings_menu.add_command(label="Innstillinger", command=self.menu_options)
@@ -87,8 +84,9 @@ class Interface:
             entry_input = entry.get()
             if entry_input.isdigit():
                 entry_input = int(entry_input)
+
                 self.config["maaletid"] = entry_input
-                write_config(self.config, "client/config.yaml")
+                self.config.write(self.config.config)
 
                 self.data.set_x_axis_max(self.config["maaletid"])
                 self.frequency.set_x_axis_max(self.config["maaletid"])

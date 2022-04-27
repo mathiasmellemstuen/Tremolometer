@@ -1,33 +1,30 @@
 """!
 Handle config data
 """
-from typing import Optional
-from customTypes import Config
-
 import yaml
 
 
-def read_config(path: str) -> Optional[Config]:
-    """!
-    Read config file.
+class Config:
+    def __init__(self, path):
+        self.config = dict()
+        self.path = path
+        self.read()
 
-    @param path The path to the config file.
+    def read(self) -> None:
+        with open(self.path) as file:
+            self.config = yaml.safe_load(file)
 
-    @return The config file as an object
-    """
-    with open(path) as file:
-        return yaml.safe_load(file)
+    def write(self, data) -> None:
+        try:
+            file = open(self.path, "w+")
+            yaml.dump(data, file, allow_unicode=True, default_flow_style=False)
+        except FileNotFoundError as err:
+            print("Could not write to file:", err)
 
+        self.read()
 
-def write_config(data: Config, path: str) -> None:
-    """!
-    Update config file.
+    def __getitem__(self, item):
+        return self.config[item]
 
-    @param data The data to write.
-    @param path Where to store the data.
-    """
-    try:
-        file = open(path, "w+")
-        yaml.dump(data, file, allow_unicode=True, default_flow_style=False)
-    except FileNotFoundError as err:
-        print("Could not write to file:", err)
+    def __setitem__(self, key, value):
+        self.config[key] = value
