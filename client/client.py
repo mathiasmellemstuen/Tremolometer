@@ -54,7 +54,7 @@ def restart_button() -> None:
         interface.frequency_label_x.configure(text=f'Spektrogram for x-aksen')
         interface.frequency_label_y.configure(text=f'Spektrogram for y-aksen')
         interface.frequency_label_z.configure(text=f'Spektrogram for z-aksen')
-        interface.reset_labels()
+        interface.draw_labels()
 
         start_button()
 
@@ -79,6 +79,8 @@ def usb_thread() -> None:
                 last_packet_time = get_current_time_ms()
 
             interface.draw_data(data)
+        elif usb_communication.check_if_device_is_connected():
+            usb_communication.ping()
         elif not usb_communication.check_if_device_is_connected():
             usb_communication.search_for_comport()
 

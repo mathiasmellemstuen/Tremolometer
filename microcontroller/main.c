@@ -107,7 +107,7 @@ int main(void) {
             }
         }
         // Send the remaining data
-        // sendData(sensorData, BUFFER_SIZE);
+        sendData(sensorData, BUFFER_SIZE);
     }
 
     return 0;

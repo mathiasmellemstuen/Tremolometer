@@ -42,7 +42,7 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=1, baudrate=115200)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=1, writeTimeout=1, baudrate=115200)
                 time.sleep(0.1)
                 temp_connection.flush()
                 temp_connection.write("!".encode())
@@ -75,6 +75,19 @@ class USBCommunication:
         @return True if we have a serial connection
         """
         return self.connection is not None
+
+    def ping(self) -> bool:
+        try:
+            time.sleep(1)
+            self.connection.write("!".encode())
+            time.sleep(1)
+            input_data = self.connection.read(self.connection.inWaiting())
+            if input_data == b'!':
+                return True
+            return False
+        except:
+            self.connection = None
+            return False
 
     def send_start_signal(self) -> None:
         """!

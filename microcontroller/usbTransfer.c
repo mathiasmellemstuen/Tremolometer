@@ -42,10 +42,9 @@ int16_t waitForStartSignal() {
         if (character >= 2)          // Start signal
             return character - 2;
         else if (character == 0) {   // Exit signal
-            waitForStartSignal();
-            return 0;
+            return waitForStartSignal();
         } else if (character == 1) { // Sync signal
-            printf("!");
+            putc('!', stdout);
             fflush(stdout);
         }
     }
