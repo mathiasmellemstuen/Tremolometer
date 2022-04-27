@@ -51,8 +51,6 @@ class USBCommunication:
                 time.sleep(0.1)
                 input = temp_connection.read(temp_connection.inWaiting())
 
-                print(input)
-
                 if input == b'':
                     temp_connection.close()
                     continue
