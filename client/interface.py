@@ -1,91 +1,17 @@
 """!
 Handle GUI.
 """
-
 from tkinter import *
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from typing import Any, List
 from config import write_config
-from typing import Any, List, Tuple
-from costumeTyping import Config, Data, Plot, Widget
-import numpy as np
-
-
-class GraphData:
-    """!
-    Container class for graph data. Used to display the raw data and the frequency.
-    """
-
-    def __init__(self, row: int, column: int, column_span: int,
-                 fig_size_x: int, fig_size_y: int, x_axis_min: int, x_axis_max: int, x_axis_step: int,
-                 window, x_label='Tid (s)', y_label='Frekvens (Hz)') -> None:
-        """!
-        Constructor.
-
-        @params self Pointer to self.
-        @params *data all data in as a tuple.
-        """
-        self.figure = Figure(figsize=(fig_size_x / 96, fig_size_y / 96), dpi=96)
-        self.plot = self.figure.add_subplot(111, xlabel=x_label, ylabel=y_label)
-        self.plot.grid(color='gray', linestyle='dashed')
-
-        self.figure.tight_layout()
-
-        self.canvas = FigureCanvasTkAgg(self.figure, master=window)
-        self.widget = self.canvas.get_tk_widget()
-        self.widget.grid(column=column, row=row, columnspan=column_span, sticky=W + E)
-
-        self.padding_value = 1.10
-        self.axis_color_and_direction = (((1.0, 0.0, 0.0), "x"), ((0.0, 0.0, 1.0), "y"), ((0.0, 1.0, 0.0), "z"))
-        self.x_label = x_label
-        self.y_label = y_label
-        self.x_axis_min = x_axis_min
-        self.x_axis_max = x_axis_max
-        self.x_axis_step = x_axis_step
-
-    def clear(self):
-        self.plot.cla()
-        self.plot.set_xlabel(self.x_label)
-        self.plot.set_ylabel(self.y_label)
-
-        self.plot.set_xlim([self.x_axis_min, self.x_axis_max])
-        self.plot.set_xticks(list(range(0, self.x_axis_max + 1))[0::self.x_axis_step])
-
-        self.plot.grid(color='gray', linestyle='dashed')
-
-    def draw(self, data: List[Data] or List[tuple[int, int]]) -> None:
-        """!
-        Draws the data to the figure.
-
-        @param self Pointer to self
-        @param data List containing data to plot
-        """
-        self.clear()
-
-        if data is None:
-            self.canvas.draw()
-            return
-
-        if not len(data) == 0:
-            max_value = max([max(element[1:]) for element in data]) * self.padding_value
-            min_value = min([min(element[1:]) for element in data]) * self.padding_value
-
-            self.plot.set_ylim(min_value, max_value)
-
-            for i in range(0, len(data[0]) - 1):
-                self.plot.plot([element[0] / 1000 for element in data], [element[i + 1] for element in data],
-                               color=self.axis_color_and_direction[i][0], label=self.axis_color_and_direction[i][1])
-
-            self.plot.legend()  # Adding a legend to the plot
-
-        self.canvas.draw()
+from costumeTyping import Config, Data
+from graphData import GraphData
 
 
 class Interface:
     """!
     Handle the user interface
     """
-
     def __init__(self, config: Config) -> None:
         """!
         Init all the window things.
@@ -109,13 +35,13 @@ class Interface:
 
         graph_len = int(config['maaletid'])
         # For graph plotting data over time
-        self.data = GraphData(2, 1, 11, 1920, 325, 0, graph_len, 1, self.window, "Bevegelse (mm)")
+        self.data = GraphData(2, 1, 11, 1920, 325, self.window, graph_len, x_label="Bevegelse (mm)")
 
         # For graph plotting frequency over time
-        self.frequency = GraphData(4, 1, 11, 1920, 325, 0, graph_len, 1, self.window)
-        self.frequency_x = GraphData(6, 1, 4, 640, 250, 0, graph_len, 1, self.window)
-        self.frequency_y = GraphData(6, 5, 4, 640, 250, 0, graph_len, 1, self.window)
-        self.frequency_z = GraphData(6, 9, 4, 640, 250, 0, graph_len, 1, self.window)
+        self.frequency = GraphData(4, 1, 11, 1920, 325, self.window, graph_len)
+        self.frequency_x = GraphData(6, 1, 4, 640, 250, self.window, graph_len)
+        self.frequency_y = GraphData(6, 5, 4, 640, 250, self.window, graph_len)
+        self.frequency_z = GraphData(6, 9, 4, 640, 250, self.window, graph_len)
 
         self.frequency_label = Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center")
         self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
@@ -194,8 +120,6 @@ class Interface:
         """
         self.connection_label.configure(text=text, foreground=foreground)
 
-        # self.frequency_label.grid(column=12, row=2, sticky="n", padx=20, pady=20)
-
     def finished_ui(self, frequency_all, frequency_x, frequency_y, frequency_z) -> None:
         """!
         Change the text to start a new measurement.
@@ -210,10 +134,7 @@ class Interface:
         self.frequency_label_x.configure(text=f'Spektrogram for x-aksen ({frequency_x:.2f}Hz)')
         self.frequency_label_y.configure(text=f'Spektrogram for y-aksen ({frequency_y:.2f}Hz)')
         self.frequency_label_z.configure(text=f'Spektrogram for z-aksen ({frequency_z:.2f}Hz)')
-        self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
-        self.frequency_label_x.grid(row=5, column=1, columnspan=4)
-        self.frequency_label_y.grid(row=5, column=5, columnspan=4)
-        self.frequency_label_z.grid(row=5, column=9, columnspan=4)
+        self.reset_labels()
 
     def draw_data(self, data: List[Data]) -> None:
         """!
@@ -223,6 +144,24 @@ class Interface:
         @param data: What data to draw
         """
         self.data.draw(data)
+
+    def draw_all(self) -> None:
+        self.frequency.canvas.draw()
+        self.frequency_x.canvas.draw()
+        self.frequency_y.canvas.draw()
+        self.frequency_z.canvas.draw()
+
+    def clear_all(self) -> None:
+        self.frequency.clear()
+        self.frequency_x.clear()
+        self.frequency_y.clear()
+        self.frequency_z.clear()
+
+    def reset_labels(self):
+        self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
+        self.frequency_label_x.grid(row=5, column=1, columnspan=4)
+        self.frequency_label_y.grid(row=5, column=5, columnspan=4)
+        self.frequency_label_z.grid(row=5, column=9, columnspan=4)
 
     def update(self) -> None:
         """!
