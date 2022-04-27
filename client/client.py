@@ -25,9 +25,8 @@ last_packet_time = 0
 
 
 def start_button() -> None:
-    """
+    """!
     Start communication with microcontroller if it is connected.
-
     """
     global measuring
 
@@ -39,6 +38,9 @@ def start_button() -> None:
 
 
 def restart_button() -> None:
+    """!
+    Start measuring a new sett of data from the microcontroller.
+    """
     global data
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
 
@@ -58,9 +60,8 @@ def restart_button() -> None:
 
 
 def usb_thread() -> None:
-    """
+    """!
     Draws data sent form the accelerometer to the plot on the GUI.
-
     """
     global last_packet_time
     global data
@@ -83,8 +84,8 @@ def usb_thread() -> None:
 
 
 def update() -> None:
-    """
-    Update GUI
+    """!
+    Update GUI.
     """
     global device_was_connected
     global data
@@ -155,9 +156,8 @@ def update() -> None:
 
 
 def on_exit() -> None:
-    """
+    """!
     Handle when the program exits.
-
     """
     global run_usb_thread
 
@@ -171,8 +171,8 @@ def on_exit() -> None:
 
 
 if __name__ == '__main__':
-    usb_thread = threading.Thread(target=usb_thread)
-    usb_thread.start()
+    data_handler = threading.Thread(target=usb_thread)
+    data_handler.start()
 
     interface.window.protocol("WM_DELETE_WINDOW", on_exit)
     interface.set_methods(start_button, update, restart_button)

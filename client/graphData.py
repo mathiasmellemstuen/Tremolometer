@@ -1,5 +1,5 @@
 """!
-Handle Graph data
+Handle a single graph in the GUI.
 """
 from tkinter import W, E
 from typing import List
@@ -17,10 +17,20 @@ class GraphData:
                  x_axis_min=0, x_axis_step=1,
                   x_label='Tid (s)', y_label='Frekvens (Hz)') -> None:
         """!
-        Constructor.
+        Constructor for a single graph in the GUI.
 
-        @params self Pointer to self.
-        @params *data all data in as a tuple.
+        @param self Pointer to self.
+        @param row GUI row position.
+        @param column GUI column position.
+        @param column_span GUI column span.
+        @param fig_size_x GUI size x.
+        @param fig_size_y GUI size y.
+        @param window What window to append to.
+        @param x_axis_max Graph x-axis max value.
+        @param x_axis_min Graph y-axis min value.
+        @param x_axis_step Graph x-axis number of steps.
+        @param x_label Graph x-axis label.
+        @param y_label Graph y-axis label.
         """
         self.figure = Figure(figsize=(fig_size_x / 96, fig_size_y / 96), dpi=96)
         self.plot = self.figure.add_subplot(111, xlabel=x_label, ylabel=y_label)
@@ -40,7 +50,12 @@ class GraphData:
         self.x_axis_max = x_axis_max
         self.x_axis_step = x_axis_step
 
-    def clear(self):
+    def clear(self) -> None:
+        """!
+        Clear the plot.
+
+        @params self Pinter to self.
+        """
         self.plot.cla()
         self.plot.set_xlabel(self.x_label)
         self.plot.set_ylabel(self.y_label)
@@ -55,7 +70,7 @@ class GraphData:
         Draws the data to the figure.
 
         @param self Pointer to self
-        @param data List containing data to plot
+        @param data test
         """
         self.clear()
 

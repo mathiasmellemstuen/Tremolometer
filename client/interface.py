@@ -10,7 +10,7 @@ from graphData import GraphData
 
 class Interface:
     """!
-    Handle the user interface
+    Handle the user interface.
     """
     def __init__(self, config: Config) -> None:
         """!
@@ -141,23 +141,38 @@ class Interface:
         Plot the data.
 
         @param self Pointer to self.
-        @param data: What data to draw
+        @param data: What data to draw.
         """
         self.data.draw(data)
 
     def draw_all(self) -> None:
+        """!
+        Draw the canvas for all frequency graph's.
+
+        @param self Pointer to self.
+        """
         self.frequency.canvas.draw()
         self.frequency_x.canvas.draw()
         self.frequency_y.canvas.draw()
         self.frequency_z.canvas.draw()
 
     def clear_all(self) -> None:
+        """!
+        Clear all frequency graph's.
+
+        @param self Pointer to self.
+        """
         self.frequency.clear()
         self.frequency_x.clear()
         self.frequency_y.clear()
         self.frequency_z.clear()
 
-    def reset_labels(self):
+    def reset_labels(self) -> None:
+        """!
+        Reset all labels.
+
+        @param self Pointer to self.
+        """
         self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
         self.frequency_label_x.grid(row=5, column=1, columnspan=4)
         self.frequency_label_y.grid(row=5, column=5, columnspan=4)
@@ -165,7 +180,7 @@ class Interface:
 
     def update(self) -> None:
         """!
-        Update the window
+        Update the window.
 
         @param self Pointer to self.
         """

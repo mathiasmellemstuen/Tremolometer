@@ -9,7 +9,7 @@ import yaml
 
 def read_config(path: str) -> Optional[Config]:
     """!
-    Read config.
+    Read config file.
 
     @param path The path to the config file.
 

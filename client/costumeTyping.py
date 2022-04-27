@@ -1,8 +1,5 @@
 """!
 Costume types to use in the code
-
-@todo
-    Add datatypes for plot and widget
 """
 from typing import TypeVar, Any, Tuple
 

@@ -1,3 +1,6 @@
+"""!
+Handling spectrogram things
+"""
 from matplotlib.figure import Figure
 from scipy import signal
 from typing import List, Any
@@ -7,12 +10,24 @@ import numpy as np
 
 
 def calculate_strongest_spectrogram_frequency(Sxx, frequencies_max):
+    """!
+    Description here
+
+    @param Sxx
+    @param frequencies_max
+    """
     row_sums = [sum(row) for row in Sxx]
     max_sum_index = row_sums.index(max(row_sums))
     return (frequencies_max * max_sum_index) / len(row_sums)
 
 
 def mask_spectrogram(Sxx, mask_percentage):
+    """!
+    Description here
+
+    @param Sxx
+    @param mask_percentage
+    """
     max_value = np.amax(Sxx)
 
     for i in range(len(Sxx) - 1):
@@ -28,9 +43,9 @@ def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Confi
 
     @param data Measurement data.
     @param figure The given matplotlib figure to use as a spectrogram.
-    @param config Configuration dict
+    @param config Configuration dict.
+    @param cmap_color
     """
-
     data_points = np.asarray(data)
     sampling_rate = 1 / 0.025
     frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, scaling="spectrum", mode="magnitude",
