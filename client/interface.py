@@ -117,14 +117,15 @@ class Interface:
         self.frequency_y = GraphData(6, 5, 4, 640, 250, 0, graph_len, 1, self.window)
         self.frequency_z = GraphData(6, 9, 4, 640, 250, 0, graph_len, 1, self.window)
 
-        Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center") \
-            .grid(row=3, column=1, columnspan=11, sticky="news")
-        Label(text="Spektrogram for x-aksen", background="white", foreground="red", anchor="center") \
-            .grid(row=5, column=1, columnspan=4)
-        Label(text="Spektrogram for y-aksen", background="white", foreground="blue", anchor="center") \
-            .grid(row=5, column=5, columnspan=4)
-        Label(text="Spektrogram for z-aksen", background="white", foreground="green", anchor="center") \
-            .grid(row=5, column=9, columnspan=4)
+        self.frequency_label = Label(text="Spektrogram for alle aksene", background="white", foreground="black", anchor="center")
+        self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
+        self.frequency_label_x = Label(text="Spektrogram for x-aksen", background="white", foreground="red", anchor="center")
+        self.frequency_label_x.grid(row=5, column=1, columnspan=4)
+        self.frequency_label_y = Label(text="Spektrogram for y-aksen", background="white", foreground="blue", anchor="center")
+        self.frequency_label_y.grid(row=5, column=5, columnspan=4)
+        self.frequency_label_z = Label(text="Spektrogram for z-aksen", background="white", foreground="green", anchor="center")
+        self.frequency_label_z.grid(row=5, column=9, columnspan=4)
+
         Label(text="Data", background="white", foreground="black", anchor="center") \
             .grid(row=1, column=1, columnspan=11, sticky="news")
 
@@ -195,7 +196,7 @@ class Interface:
 
         # self.frequency_label.grid(column=12, row=2, sticky="n", padx=20, pady=20)
 
-    def finished_ui(self) -> None:
+    def finished_ui(self, frequency_all, frequency_x, frequency_y, frequency_z) -> None:
         """!
         Change the text to start a new measurement.
 
@@ -204,6 +205,15 @@ class Interface:
         self.start_button.configure(text="Start ny måling")
         self.start_button.configure(command=self.restart_method)
         self.start_button.grid(column=1, row=1, sticky="news", padx=20, pady=20)
+
+        self.frequency_label.configure(text=f'Spektrogram for alle aksene ({frequency_all:.2f}Hz)')
+        self.frequency_label_x.configure(text=f'Spektrogram for x-aksen ({frequency_x:.2f}Hz)')
+        self.frequency_label_y.configure(text=f'Spektrogram for y-aksen ({frequency_y:.2f}Hz)')
+        self.frequency_label_z.configure(text=f'Spektrogram for z-aksen ({frequency_z:.2f}Hz)')
+        self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
+        self.frequency_label_x.grid(row=5, column=1, columnspan=4)
+        self.frequency_label_y.grid(row=5, column=5, columnspan=4)
+        self.frequency_label_z.grid(row=5, column=9, columnspan=4)
 
     def draw_data(self, data: List[Data]) -> None:
         """!
