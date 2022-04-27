@@ -5,7 +5,7 @@ communication thread.
 from tkinter.messagebox import showwarning, askquestion
 from typing import Optional, List
 
-from client.customTypes import Data
+from customTypes import Data
 from interface import Interface
 from usbCommunication import USBCommunication
 from config import Config
@@ -96,7 +96,7 @@ def usb_thread() -> None:
 
             # Check if the bytes received from ping is a measurement data
             if not status and len(in_data) > 10:
-                extend_data(USBCommunication.read_from_data(in_data))
+                extend_data(usb_communication.read_from_data(in_data))
 
         elif not usb_communication.check_if_device_is_connected():
             # Searching for a USB connection
