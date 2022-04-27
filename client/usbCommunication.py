@@ -3,7 +3,7 @@ Documentation for this module.
 
 More details.
 """
-from typing import Optional, List
+from typing import Optional, List, Any
 from customTypes import Data
 from serial.tools.list_ports_common import ListPortInfo
 
@@ -75,18 +75,19 @@ class USBCommunication:
         """
         return self.connection is not None
 
-    def ping(self) -> bool:
+    def ping(self) -> tuple[bool, bytes]:
         try:
             time.sleep(1)
             self.connection.write("!".encode())
             time.sleep(1)
             input_data = self.connection.read(self.connection.inWaiting())
             if input_data == b'!':
-                return True
-            return False
+                return True, b'0'
+            else:
+                return False, input_data
         except:
             self.connection = None
-            return False
+            return False, b'0'
 
     def send_start_signal(self) -> None:
         """!
@@ -135,6 +136,21 @@ class USBCommunication:
                 data.append((time, x, y, z))
             return data
         return None
+
+    def read_from_data(self, buffer) -> Optional[List[Data]]:
+        num_packages = int(self.config['antallPakker'])
+        input = buffer
+        bytes = base64.b64decode(input)
+        data = []
+        for i in range(num_packages):
+            time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
+            x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)
+            y = int.from_bytes(bytes[10 * i + 6: 10 * i + 8], byteorder="big", signed=True)
+            z = int.from_bytes(bytes[10 * i + 8: 10 * i + 10], byteorder="big", signed=True)
+
+            data.append((time, x, y, z))
+        return data
+
 
     @staticmethod
     def calc_buffer_size(input_len: int, package_size: int) -> int:

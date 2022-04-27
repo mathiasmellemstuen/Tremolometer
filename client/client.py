@@ -54,7 +54,7 @@ def restart_button() -> None:
     """!
     Start measuring a new sett of data from the microcontroller.
     """
-    global data
+    global data, measuring
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
 
     if answer == "yes":
@@ -93,7 +93,18 @@ def usb_thread() -> None:
 
             interface.draw_data(data)
         elif usb_communication.check_if_device_is_connected():
-            usb_communication.ping()
+            status, in_data = usb_communication.ping()
+
+            if not status and len(in_data) > 10:
+                new_data = usb_communication.read_from_data(in_data)
+
+                for d in new_data:
+                    if d[1] == 0 and d[2] == 0 and d[3] == 0:
+                        del d
+
+                data.extend(new_data)
+                last_packet_time = get_current_time_ms()
+
         elif not usb_communication.check_if_device_is_connected():
             usb_communication.search_for_comport()
 
