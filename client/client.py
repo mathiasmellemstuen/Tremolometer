@@ -118,9 +118,9 @@ def update() -> None:
         measuring = False
 
         # Normalize all axis
-        x_mean = mean(d[1] for d in data)
-        y_mean = mean(d[2] for d in data)
-        z_mean = mean(d[3] for d in data)
+        x_mean = min(d[1] for d in data)
+        y_mean = min(d[2] for d in data)
+        z_mean = min(d[3] for d in data)
 
         for i in range(len(data) - 1):
             temp_data = list(data[i])
@@ -129,11 +129,11 @@ def update() -> None:
             temp_data[3] = temp_data[3] - z_mean
             data[i] = tuple(temp_data)
 
-        data_x = filter.lowpass_filter(np.array([d[1] for d in data]), 10, 40)
-        data_y = filter.lowpass_filter(np.array([d[2] for d in data]), 10, 40)
-        data_z = filter.lowpass_filter(np.array([d[3] for d in data]), 10, 40)
+        data_x = filter.low_pass_filter(np.array([d[1] for d in data]), 19.9, 40)
+        data_y = filter.low_pass_filter(np.array([d[2] for d in data]), 19.9, 40)
+        data_z = filter.low_pass_filter(np.array([d[3] for d in data]), 19.9, 40)
 
-        for i in range(len(data)):
+        for i in range(len(data) - 1):
             temp_data = list(data[i])
             temp_data[1] = data_x[i]
             temp_data[2] = data_y[i]
@@ -143,11 +143,15 @@ def update() -> None:
         interface.draw_data(data)
 
         # Calculating and drawing spectrogram when the measuring is finished
-        spectrogram.create_spectrogram_from_data([np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data],
-                                                 interface.frequency.plot, config, "magma")
-        spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config, "Reds")
-        spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config, "Blues")
-        spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config, "Greens")
+        three_axial_length_data = [np.sqrt(pow(d[1], 2) + pow(d[2], 2) + pow(d[3], 2)) for d in data]
+        three_axial_length_data_mean = min(d for d in three_axial_length_data)
+        for i in range(len(three_axial_length_data) - 1):
+            three_axial_length_data[i] = three_axial_length_data[i] - three_axial_length_data_mean
+
+        spectrogram.create_spectrogram_from_data(three_axial_length_data, interface.frequency.plot, config, "hot")
+        spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config, "hot")
+        spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config, "hot")
+        spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config, "hot")
         interface.frequency.canvas.draw()
         interface.frequency_x.canvas.draw()
         interface.frequency_y.canvas.draw()
