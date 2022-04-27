@@ -4,7 +4,6 @@ interface.
 """
 from tkinter import *
 from typing import Any, List
-from config import write_config
 from customTypes import Config, Data
 from graphData import GraphData
 
@@ -137,7 +136,7 @@ class Interface:
 
                 # Updates the new input in both the settings file and elsewhere in the application
                 self.config["maaletid"] = entry_input
-                write_config(self.config, "client/config.yaml")
+                self.config.write(self.config.config)
 
                 self.data.set_x_axis_max(self.config["maaletid"])
                 self.frequency.set_x_axis_max(self.config["maaletid"])

@@ -39,9 +39,9 @@ int16_t waitForStartSignal() {
         stdio_init_all();
         char character = getchar() - 32;
 
-        if (character >= 2)          // Start signal
+        if (character >= 2) {         // Start signal
             return character - 2;
-        else if (character == 0) {   // Exit signal
+        } else if (character == 0) {   // Exit signal
             return waitForStartSignal();
         } else if (character == 1) { // Sync signal
             putc('!', stdout);

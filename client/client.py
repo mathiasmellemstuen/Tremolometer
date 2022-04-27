@@ -3,8 +3,6 @@ Main entrypoint for this application. Handles initialization of the tkinter user
 communication thread.
 """
 from tkinter.messagebox import showwarning, askquestion
-from config import read_config
-from customTypes import Config
 from interface import Interface
 from usbCommunication import USBCommunication
 import threading

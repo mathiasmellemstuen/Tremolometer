@@ -9,7 +9,6 @@ import time
 import serial.tools.list_ports
 import serial
 import base64
-import config
 import os
 import math
 
@@ -18,15 +17,16 @@ class USBCommunication:
     """!
     Handle USB communication with microcontroller.
     """
-    def __init__(self) -> None:
+    def __init__(self, config) -> None:
         """!
         Constructor of the USBCommunication class.
 
         @param self Pointer to self.
         """
         self.connection = None
-        self.config = config.read_config("client/config.yaml")
+        self.config = config
         self.connection_port_prefix = "" if os.name == "nt" else "/dev/"
+
     def search_for_comport(self) -> Optional[ListPortInfo]:
         """!
         Find the COM port the device is connected to.
@@ -93,6 +93,7 @@ class USBCommunication:
         @param self Pointer to self.
         """
         self.connection.flush()
+        t = self.config["maaletid"]
         self.connection.write(f'{chr(self.config["maaletid"] + 34)}'.encode())
 
     def send_exit_signal(self) -> None:
