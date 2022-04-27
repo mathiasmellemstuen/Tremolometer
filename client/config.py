@@ -1,5 +1,5 @@
 """!
-Handle config data
+Handling reading and writing data in the configuration yaml file (config.yaml).
 """
 import yaml
 
