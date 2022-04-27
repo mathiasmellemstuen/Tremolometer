@@ -29,7 +29,6 @@ class USBCommunication:
         self.connection = None
         self.config = config.read_config("client/config.yaml")
         self.connection_port_prefix = "" if os.name == "nt" else "/dev/"
-
     def search_for_comport(self) -> Optional[ListPortInfo]:
         """!
         Find the COM port the device is connected to.
@@ -42,7 +41,7 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=1, writeTimeout=1, baudrate=115200)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=4, writeTimeout=4, baudrate=115200)
                 time.sleep(0.1)
                 temp_connection.flush()
                 temp_connection.write("!".encode())
@@ -131,6 +130,7 @@ class USBCommunication:
                 x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)
                 y = int.from_bytes(bytes[10 * i + 6: 10 * i + 8], byteorder="big", signed=True)
                 z = int.from_bytes(bytes[10 * i + 8: 10 * i + 10], byteorder="big", signed=True)
+
                 data.append((time, x, y, z))
             return data
         return None

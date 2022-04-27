@@ -75,7 +75,6 @@ int main(void) {
     while (1) {
         bufferIndex = 0;
         // Wait for start signal and get the measurement time.
-        sleep_ms(1000);
         uint16_t runningTime = waitForStartSignal() * 1000;
         // runningTime = 20000;
         // Start timing
@@ -84,7 +83,7 @@ int main(void) {
         uint32_t lastTime = 0;
 
         // Do all measurements
-        for (uint32_t time = timeSinceStart(); time <= endTime + 1000; time = timeSinceStart()) {
+        for (uint32_t time = timeSinceStart(); time <= endTime + 2000; time = timeSinceStart()) {
             // Wait for WAIT_TIME ms before taking next measurement
             if ((time - lastTime) < WAIT_TIME)
                 continue;
@@ -107,7 +106,13 @@ int main(void) {
             }
         }
         // Send the remaining data
-        sendData(sensorData, BUFFER_SIZE);
+        //sendData(sensorData, BUFFER_SIZE);
+
+        // Clearing the buffers
+        for(int i = 0; i < BUFFER_SIZE; i++) {
+            data0[i] = (struct Data){0, 0, 0, 0};
+            data1[i] = (struct Data){0, 0, 0, 0};
+        }
     }
 
     return 0;
