@@ -1,2 +1,5 @@
 maaletid: 20000
 antallPakker: 64
+frekvens_min: 0
+frekvens_maks: 20
+spektrogram_maske: 0

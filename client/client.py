@@ -10,8 +10,8 @@ from tkinter.messagebox import showwarning, askquestion
 from timer import get_current_time_ms
 from statistics import mean
 import threading
-import spectrogram
 import numpy as np
+import spectrogram
 import filter
 
 data = []
@@ -114,7 +114,6 @@ def update() -> None:
 
     # Run after the measuring is done
     if measuring and not len(data) == 0 and data[len(data) - 1][0] > config["maaletid"]:
-        interface.finished_ui()
         measuring = False
 
         # Normalize all axis
@@ -148,14 +147,17 @@ def update() -> None:
         for i in range(len(three_axial_length_data) - 1):
             three_axial_length_data[i] = three_axial_length_data[i] - three_axial_length_data_mean
 
-        spectrogram.create_spectrogram_from_data(three_axial_length_data, interface.frequency.plot, config, "hot")
-        spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config, "hot")
-        spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config, "hot")
-        spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config, "hot")
+        strongest_frequency = spectrogram.create_spectrogram_from_data(three_axial_length_data, interface.frequency.plot, config, "hot")
+        strongest_frequency_x = spectrogram.create_spectrogram_from_data([d[1] for d in data], interface.frequency_x.plot, config, "hot")
+        strongest_frequency_y = spectrogram.create_spectrogram_from_data([d[2] for d in data], interface.frequency_y.plot, config, "hot")
+        strongest_frequency_z = spectrogram.create_spectrogram_from_data([d[3] for d in data], interface.frequency_z.plot, config, "hot")
+
         interface.frequency.canvas.draw()
         interface.frequency_x.canvas.draw()
         interface.frequency_y.canvas.draw()
         interface.frequency_z.canvas.draw()
+
+        interface.finished_ui(frequency_all=strongest_frequency, frequency_x=strongest_frequency_x, frequency_y=strongest_frequency_y, frequency_z=strongest_frequency_z)
         interface.update()
 
     interface.window.after(1, update)
