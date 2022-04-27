@@ -1,5 +1,5 @@
 """!
-Handle config data
+Handling reading and writing data in the configuration yaml file (config.yaml).
 """
 from typing import Optional
 from customTypes import Config

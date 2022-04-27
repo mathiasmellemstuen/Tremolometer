@@ -1,13 +1,11 @@
 """!
-Documentation for this module.
-
-More details.
+Handles the USB communication between the application and microcontroller. Code in this module is running inside it's
+own thread.
 """
-import time
 from typing import Optional, List
 from customTypes import Data
 from serial.tools.list_ports_common import ListPortInfo
-
+import time
 import serial.tools.list_ports
 import serial
 import base64
@@ -22,7 +20,7 @@ class USBCommunication:
     """
     def __init__(self) -> None:
         """!
-        Constructor
+        Constructor of the USBCommunication class.
 
         @param self Pointer to self.
         """

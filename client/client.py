@@ -1,49 +1,46 @@
 """!
-Handle the client.
+Main entrypoint for this application. Handles initialization of the tkinter user interface and starting usb
+communication thread.
 """
 from tkinter.messagebox import showwarning, askquestion
 from config import read_config
 from customTypes import Config
 from interface import Interface
-from timer import get_current_time_ms
 from usbCommunication import USBCommunication
-
 import threading
 import filter
 import spectrogram
 import numpy as np
 
-## Measurement data.
+## Measurement data received from the microcontroller / sensor.
 data = []
 
-## Config data.
+## Dict of data from the configuration file (config.yaml).
 config: Config = read_config("client/config.yaml")
 
-## Communication connection to the microcontroller.
+## Initialization of USB Communication connection to the microcontroller.
 usb_communication: USBCommunication = USBCommunication()
 
-## GUI.
+## Initialization of the user interface.
 interface = Interface(config)
 
-## Microcontroller has been connected.
+## True if the microcontroller was connected during the last frame.
 device_was_connected = False
 
-## Microcontroller and Client are communicating measurements.
+## True if microcontroller are currently sending measurements to this application.
 measuring = False
 
-## The USB thread is currently running.
+## True if the USB thread is currently running.
 run_usb_thread = True
-
-## Last packet time
-last_packet_time = 0
 
 
 def start_button() -> None:
     """!
-    Start communication with microcontroller if it is connected.
+    Function is called then the start button is pressed. Sends start signal to the microcontroller if it's connected.
     """
     global measuring
 
+    # Sends start signal if the device is connected. Displying a warning if the device is disconnected.
     if usb_communication.check_if_device_is_connected():
         usb_communication.send_start_signal()
         measuring = True
@@ -53,11 +50,15 @@ def start_button() -> None:
 
 def restart_button() -> None:
     """!
-    Start measuring a new sett of data from the microcontroller.
+    Function is called when the restart button is pressed. Sends a start signal to the microcontroller if it's
+    connected.
     """
     global data
+
+    # Displaying dialogbox with yes / no question
     answer = askquestion("Starte på nytt", "Dette vil fjerne all synlig data og starte på nytt")
 
+    # Clearing user interface and sends start signal
     if answer == "yes":
         data = []
 
@@ -75,13 +76,16 @@ def restart_button() -> None:
 
 def usb_thread() -> None:
     """!
-    Draws data sent form the accelerometer to the plot on the GUI.
+    Function is running on separate thread. Handling all USB communication such as reading measurment data, pinging
+    microcontroller and searching for comports.
     """
-    global last_packet_time
     global data
 
     while run_usb_thread:
+        # Reading the data if we are currently receiving measurement data and the device is connected.
         if usb_communication.check_if_device_is_connected() and measuring:
+
+            # Reading data from microcontroller
             new_data = usb_communication.read()
 
             if new_data is not None:
@@ -90,44 +94,50 @@ def usb_thread() -> None:
                         del d
 
                 data.extend(new_data)
-                last_packet_time = get_current_time_ms()
 
+            # Updating the user interface with the received data
             interface.draw_data(data)
         elif usb_communication.check_if_device_is_connected():
+            # Pinging the client to keep the connection alive
             usb_communication.ping()
         elif not usb_communication.check_if_device_is_connected():
+            # Searching for a USB connection
             usb_communication.search_for_comport()
 
 
 def update() -> None:
     """!
-    Update GUI.
+    Main update loop of the application. Providing user interface with data and updating the user interface accordingly.
+    Handles processing of received data with filters and generating spectrogram images.
     """
     global device_was_connected
     global data
-    global start_time
     global config
     global measuring
 
     if usb_communication.check_if_device_is_connected():
         device_was_connected = True
+        # Changing the status text in the upper right corner if the device is connected
         interface.change_status_text("Tilkoblet", "green")
     else:
+        # Changing the status text in the upper right corner if the device is disconnected
         interface.change_status_text("Ikke tilkoblet", "red")
 
+        # This runs once after the device have been disconnected. Displays a warning dialog box
         if device_was_connected:
             device_was_connected = False
             showwarning("Frakoblet", "Tremolometer ble frakoblet")
 
-    # Run after the measuring is done
+    # Running once when application have reaceived every measurment from the microcontroller and the microcontroller is finished sending
     if measuring and not len(data) == 0 and data[len(data) - 1][0] / 1000 > config["maaletid"]:
         measuring = False
 
-        # Normalize all axis
+        # Getting the minimum value for each axis
         x_min = min(d[1] for d in data)
         y_min = min(d[2] for d in data)
         z_min = min(d[3] for d in data)
 
+        # Pushing each axis in the graph above y = 0
         for i in range(len(data) - 1):
             temp_data = list(data[i])
             temp_data[1] = temp_data[1] - x_min
@@ -135,10 +145,12 @@ def update() -> None:
             temp_data[3] = temp_data[3] - z_min
             data[i] = tuple(temp_data)
 
+        # Applying low pass filter to data in each x,y,z axis
         data_x = filter.low_pass_filter(np.array([d[1] for d in data]), 19.9, 40)
         data_y = filter.low_pass_filter(np.array([d[2] for d in data]), 19.9, 40)
         data_z = filter.low_pass_filter(np.array([d[3] for d in data]), 19.9, 40)
 
+        # Assigning low pass filter data to the data variable
         for i in range(len(data) - 1):
             temp_data = list(data[i])
             temp_data[1] = data_x[i]
@@ -146,6 +158,7 @@ def update() -> None:
             temp_data[3] = data_z[i]
             data[i] = tuple(temp_data)
 
+        # Drawing processed data
         interface.draw_data(data)
 
         # Calculating and drawing spectrogram when the measuring is finished
@@ -163,17 +176,23 @@ def update() -> None:
         strongest_frequency_z = spectrogram.create_spectrogram_from_data([d[3] for d in data],
                                                                          interface.frequency_z.plot, config)
 
+        # Sending draw call to all graph in the user interface
         interface.draw_all()
 
+        # Updating the user interface to finished mode. Displaying the strongest frequencies in the labels
         interface.finished_ui(strongest_frequency, strongest_frequency_x, strongest_frequency_y, strongest_frequency_z)
+
+        # Updating interface. Includes running the tkinter update method
         interface.update()
 
+    # Waiting 1 milliseconds before calling itself recursively
     interface.window.after(1, update)
 
 
 def on_exit() -> None:
     """!
-    Handle when the program exits.
+    Callback function that is called when the program exits. Closes usb connection and destroying tkinter window
+    properly.
     """
     global run_usb_thread
 
@@ -187,9 +206,15 @@ def on_exit() -> None:
 
 
 if __name__ == '__main__':
+    # Creating and startin usb thread
     data_handler = threading.Thread(target=usb_thread)
     data_handler.start()
 
+    # Setting up on exit callback
     interface.window.protocol("WM_DELETE_WINDOW", on_exit)
+
+    # Setting methods callbacks for buttons and update loop in the user interface
     interface.set_methods(start_button, update, restart_button)
+
+    # Starting the update loop, calling itself recursively
     interface.update()

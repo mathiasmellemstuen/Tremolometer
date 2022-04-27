@@ -1,5 +1,5 @@
 """!
-Handling spectrogram things
+Functions related to plotting, creating and modifying spectrograms.
 """
 from matplotlib.figure import Figure
 from scipy import signal
