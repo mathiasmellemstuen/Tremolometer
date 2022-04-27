@@ -47,7 +47,7 @@ class USBCommunication:
                 temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=1, baudrate=115200)
                 time.sleep(0.1)
                 temp_connection.flush()
-                temp_connection.write("T".encode())
+                temp_connection.write("!".encode())
                 time.sleep(0.1)
                 input = temp_connection.read(temp_connection.inWaiting())
 
@@ -57,7 +57,7 @@ class USBCommunication:
                     temp_connection.close()
                     continue
 
-                if input == b'T':
+                if input == b'!':
                     self.connection = temp_connection
                     self.connection.flush()
                     return port
@@ -88,7 +88,7 @@ class USBCommunication:
         """
         self.connection.flush()
         # self.connection.write(str(self.config["maaletid"]).encode())
-        self.connection.write("S".encode())
+        self.connection.write(f'{chr(self.config["maaletid"] + 34)}'.encode())
 
     def send_exit_signal(self) -> None:
         """!
@@ -98,7 +98,7 @@ class USBCommunication:
         """
         try:
             self.connection.flush()
-            self.connection.write("E".encode())
+            self.connection.write(" ".encode())
         except:
             print("Could not send stopping signal. Exiting")
 

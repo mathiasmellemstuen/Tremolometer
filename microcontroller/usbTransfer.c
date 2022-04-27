@@ -43,20 +43,18 @@ int16_t waitForStartSignal() {
 
     while(true) {
         stdio_init_all();
-        char character = getchar();
+        char character = getchar() - 32;
 
-        if(character == 'S') { // Start signal
-            break;
-
-        } else if(character == 'E') { // Exit signal
+        if(character >= 2) { // Start signal
+            return character;
+        } else if(character == 0) { // Exit signal
             waitForStartSignal();
             return 0;
-        } else if(character == 'T') {
-            printf("T");
+        } else if(character == 1) {
+            printf("!");
             fflush(stdout);
         }
     }
-
     return 0;
 }
 
@@ -66,11 +64,11 @@ void waitForHandshake() {
         stdio_init_all();
         char character = getchar();
 
-        if(character == 'T') {
+        if(character == '!') {
             break;
         }
     }
 
-    printf("T");
+    printf("!");
     fflush(stdout);
 }

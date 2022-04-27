@@ -82,7 +82,7 @@ def usb_thread() -> None:
             if new_data is not None:
                 for d in new_data:
                     if d[1] == 0 and d[2] == 0 and d[3] == 0:
-                        new_data.pop(d)
+                        del d
 
                 data.extend(new_data)
                 last_packet_time = get_current_time_ms()
@@ -113,7 +113,7 @@ def update() -> None:
             showwarning("Frakoblet", "Tremolometer ble frakoblet")
 
     # Run after the measuring is done
-    if measuring and not len(data) == 0 and data[len(data) - 1][0] > config["maaletid"]:
+    if measuring and not len(data) == 0 and data[len(data) - 1][0] / 1000 > config["maaletid"]:
         interface.finished_ui()
         measuring = False
 

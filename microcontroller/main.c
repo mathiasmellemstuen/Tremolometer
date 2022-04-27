@@ -76,8 +76,8 @@ int main(void) {
     while (1) {
         // Wait for start signal and get the measurement time.
         sleep_ms(1000);
-        uint16_t runningTime = waitForStartSignal();
-        runningTime = 20000;
+        uint16_t runningTime = waitForStartSignal() * 1000;
+        // runningTime = 20000;
         // Start timing
         timeInit();
         uint32_t endTime = runningTime + timeSinceStart();
