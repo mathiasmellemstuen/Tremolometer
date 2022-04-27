@@ -3,6 +3,9 @@ Main entrypoint for this application. Handles initialization of the tkinter user
 communication thread.
 """
 from tkinter.messagebox import showwarning, askquestion
+from typing import Optional, List
+
+from client.customTypes import Data
 from interface import Interface
 from usbCommunication import USBCommunication
 from config import Config
@@ -86,33 +89,38 @@ def usb_thread() -> None:
         if usb_communication.check_if_device_is_connected() and measuring:
 
             # Reading data from microcontroller
-            new_data = usb_communication.read()
+            extend_data(usb_communication.read())
 
-            if new_data is not None:
-                for d in new_data:
-                    if d[1] == 0 and d[2] == 0 and d[3] == 0:
-                        del d
-
-                data.extend(new_data)
-
-            # Updating the user interface with the received data
-            interface.draw_data(data)
-            
         elif usb_communication.check_if_device_is_connected():
             status, in_data = usb_communication.ping()
 
+            # Check if the bytes received from ping is a measurement data
             if not status and len(in_data) > 10:
-                new_data = usb_communication.read_from_data(in_data)
-
-                for d in new_data:
-                    if d[1] == 0 and d[2] == 0 and d[3] == 0:
-                        del d
-
-                data.extend(new_data)
+                extend_data(USBCommunication.read_from_data(in_data))
 
         elif not usb_communication.check_if_device_is_connected():
             # Searching for a USB connection
             usb_communication.search_for_comport()
+
+
+def extend_data(new_data: Optional[List[Data]]) -> None:
+    """!
+    Extend data array with non zero new data.
+
+    @param new_data Data read form the microcontroller.
+    """
+    global data
+
+    # Remove any datapoint with XYZ == 0
+    if new_data is not None:
+        for d in new_data:
+            if d[1] == 0 and d[2] == 0 and d[3] == 0:
+                del d
+
+        data.extend(new_data)
+
+    # updating the user interface with the received data
+    interface.draw_data(data)
 
 
 def update() -> None:
