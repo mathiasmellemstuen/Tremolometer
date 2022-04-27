@@ -4,34 +4,31 @@
 
 ### Install compiler
 ```bash
-brew tap ArmMbed/homebrew-formula
-brew install arm-none-eabi-gcc
+$ brew tap ArmMbed/homebrew-formula
+$ brew install arm-none-eabi-gcc
 ```
 
 ### Pull submodules
 ```bash
-git submodule update --init --recursive
+$ git submodule update --init --recursive
 ```
 
 ## Building microcontroller project
-```
-mkdir build
-cd build
-cmake ..
-make
+```bash
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
 ```
 
 ### Install python packages
 ```bash
-pip install matplotlib
-pip install pandas
-pip install pyserial
-pip install openpyxl
+$ pip install -r requirements.txt
 ```
 
 ## Running client
 ```bash
-python3 client/client.py
+$ python3 client/client.py
 ```
 
 ## Generate Documentation
