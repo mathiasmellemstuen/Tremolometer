@@ -90,6 +90,7 @@ class Interface:
                 self.config["maaletid"] = entry_input
                 write_config(self.config, "client/config.yaml")
 
+                self.data.set_x_axis_max(self.config["maaletid"])
                 self.frequency.set_x_axis_max(self.config["maaletid"])
                 self.frequency_x.set_x_axis_max(self.config["maaletid"])
                 self.frequency_y.set_x_axis_max(self.config["maaletid"])
