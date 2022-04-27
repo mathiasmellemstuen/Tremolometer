@@ -3,11 +3,9 @@ Handle GUI.
 """
 
 from tkinter import *
-import matplotlib.pyplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from config import write_config
-from spectrogram import create_spectrogram_from_data
 from typing import Any, List, Tuple
 from costumeTyping import Config, Data, Plot, Widget
 import numpy as np
@@ -111,11 +109,11 @@ class Interface:
 
         graph_len = int(config['maaletid'])
         # For graph plotting data over time
-        self.data = GraphData(2, 1, 11, 1920, 400, 0, graph_len, 1000, self.window, "Tid (ms)", "Bevegelse (mm)")
+        self.data = GraphData(2, 1, 11, 1920, 325, 0, graph_len, 1000, self.window, "Tid (ms)", "Bevegelse (mm)")
 
         graph_len = int(graph_len / 1000)
         # For graph plotting frequency over time
-        self.frequency = GraphData(4, 1, 11, 1920, 250, 0, graph_len, 1, self.window)
+        self.frequency = GraphData(4, 1, 11, 1920, 325, 0, graph_len, 1, self.window)
         self.frequency_x = GraphData(6, 1, 4, 640, 250, 0, graph_len, 1, self.window)
         self.frequency_y = GraphData(6, 5, 4, 640, 250, 0, graph_len, 1, self.window)
         self.frequency_z = GraphData(6, 9, 4, 640, 250, 0, graph_len, 1, self.window)
