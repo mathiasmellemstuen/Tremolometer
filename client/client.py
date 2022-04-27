@@ -1,31 +1,21 @@
 """!
 Handle the client.
 """
-from typing import List
 from costumeTyping import Data, Config
 from interface import Interface
 from config import read_config
 from usbCommunication import USBCommunication
 from tkinter.messagebox import showwarning, askquestion
 from timer import get_current_time_ms
-from statistics import mean
 import threading
 import numpy as np
 import spectrogram
 import filter
 
 data = []
-"""!Store data"""
 config: Config = read_config("client/config.yaml")
 usb_communication: USBCommunication = USBCommunication()
-# Creating test data
-# for i in range(0, 20000):
-#    if i < 5000:
-#        data.append((i, 1000 * math.sin(i * 0.006), 0, 0))
-#    elif i > 10000:
-#        data.append((i, 1000 * math.sin(i * 0.1), 0, 0))
-#    else:
-#        data.append((i, 1000 * math.sin(i * 0.02), 0, 0))
+
 interface = Interface(config)
 device_was_connected = False
 measuring = False
@@ -64,8 +54,18 @@ def restart_button() -> None:
         interface.frequency_y.canvas.draw()
         interface.frequency_z.canvas.draw()
 
-        start_button()
+        interface.frequency_label.configure(text=f'Spektrogram for alle aksene')
+        interface.frequency_label_x.configure(text=f'Spektrogram for x-aksen')
+        interface.frequency_label_y.configure(text=f'Spektrogram for y-aksen')
+        interface.frequency_label_z.configure(text=f'Spektrogram for z-aksen')
+        interface.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
+        interface.frequency_label_x.grid(row=5, column=1, columnspan=4)
+        interface.frequency_label_y.grid(row=5, column=5, columnspan=4)
+        interface.frequency_label_z.grid(row=5, column=9, columnspan=4)
 
+        usb_communication.connection.flush()
+
+        start_button()
 
 def usb_thread() -> None:
     """
@@ -114,7 +114,6 @@ def update() -> None:
 
     # Run after the measuring is done
     if measuring and not len(data) == 0 and data[len(data) - 1][0] / 1000 > config["maaletid"]:
-        interface.finished_ui()
         measuring = False
 
         # Normalize all axis
