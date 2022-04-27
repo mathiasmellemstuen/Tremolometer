@@ -4,7 +4,7 @@ Handle GUI.
 from tkinter import *
 from typing import Any, List
 from config import write_config
-from costumeTyping import Config, Data
+from customTypes import Config, Data
 from graphData import GraphData
 
 
@@ -26,7 +26,6 @@ class Interface:
         self.update_method = None
         self.restart_method = None
         self.config = config
-
         self.menu = Menu(self.window)
         self.settings_menu = Menu(self.menu, tearoff=False)
         self.settings_menu.add_command(label="Innstillinger", command=self.menu_options)
@@ -35,7 +34,7 @@ class Interface:
 
         graph_len = int(config['maaletid'])
         # For graph plotting data over time
-        self.data = GraphData(2, 1, 11, 1920, 325, self.window, graph_len, x_label="Bevegelse (mm)")
+        self.data = GraphData(2, 1, 11, 1920, 325, self.window, graph_len, y_label="Bevegelse (mm)")
 
         # For graph plotting frequency over time
         self.frequency = GraphData(4, 1, 11, 1920, 325, self.window, graph_len)
@@ -78,7 +77,7 @@ class Interface:
         settings_window.geometry("200x200")
 
         Label(settings_window, text="Innstillinger").grid(row=0)
-        Label(settings_window, text="Måletid (ms)").grid(row=1, column=0)
+        Label(settings_window, text="Måletid (s)").grid(row=1, column=0)
 
         entry = Entry(settings_window)
         entry.grid(row=1, column=1)
@@ -90,6 +89,11 @@ class Interface:
                 entry_input = int(entry_input)
                 self.config["maaletid"] = entry_input
                 write_config(self.config, "client/config.yaml")
+
+                self.frequency.set_x_axis_max(self.config["maaletid"])
+                self.frequency_x.set_x_axis_max(self.config["maaletid"])
+                self.frequency_y.set_x_axis_max(self.config["maaletid"])
+                self.frequency_z.set_x_axis_max(self.config["maaletid"])
 
             settings_window.destroy()
 
@@ -134,7 +138,7 @@ class Interface:
         self.frequency_label_x.configure(text=f'Spektrogram for x-aksen ({frequency_x:.2f}Hz)')
         self.frequency_label_y.configure(text=f'Spektrogram for y-aksen ({frequency_y:.2f}Hz)')
         self.frequency_label_z.configure(text=f'Spektrogram for z-aksen ({frequency_z:.2f}Hz)')
-        self.reset_labels()
+        self.draw_labels()
 
     def draw_data(self, data: List[Data]) -> None:
         """!
@@ -157,7 +161,7 @@ class Interface:
         self.frequency_y.clear()
         self.frequency_z.clear()
 
-    def reset_labels(self):
+    def draw_labels(self):
         self.frequency_label.grid(row=3, column=1, columnspan=11, sticky="news")
         self.frequency_label_x.grid(row=5, column=1, columnspan=4)
         self.frequency_label_y.grid(row=5, column=5, columnspan=4)

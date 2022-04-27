@@ -5,7 +5,7 @@ More details.
 """
 import time
 from typing import Optional, List
-from costumeTyping import Data
+from customTypes import Data
 from serial.tools.list_ports_common import ListPortInfo
 
 import serial.tools.list_ports

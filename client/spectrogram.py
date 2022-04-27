@@ -1,7 +1,7 @@
 from matplotlib.figure import Figure
 from scipy import signal
 from typing import List, Any
-from costumeTyping import Data, Config
+from customTypes import Data, Config
 
 import numpy as np
 

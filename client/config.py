@@ -2,7 +2,7 @@
 Handle config data
 """
 from typing import Optional
-from costumeTyping import Config
+from customTypes import Config
 
 import yaml
 

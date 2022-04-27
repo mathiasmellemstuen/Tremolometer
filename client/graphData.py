@@ -5,7 +5,7 @@ from tkinter import W, E
 from typing import List
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from costumeTyping import Data
+from customTypes import Data
 
 
 class GraphData:
@@ -39,6 +39,10 @@ class GraphData:
         self.x_axis_min = x_axis_min
         self.x_axis_max = x_axis_max
         self.x_axis_step = x_axis_step
+
+    def set_x_axis_max(self, new_x_axis_max):
+        self.x_axis_max = new_x_axis_max
+        self.draw([])
 
     def clear(self):
         self.plot.cla()
