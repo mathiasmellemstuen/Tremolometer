@@ -1,16 +1,16 @@
 """!
 Handle the client.
 """
-from costumeTyping import Data, Config
-from interface import Interface
-from config import read_config
-from usbCommunication import USBCommunication
-from tkinter.messagebox import showwarning, askquestion
-from timer import get_current_time_ms
 import threading
+from tkinter.messagebox import showwarning, askquestion
 import numpy as np
-import spectrogram
 import filter
+import spectrogram
+from config import read_config
+from costumeTyping import Config
+from interface import Interface
+from timer import get_current_time_ms
+from usbCommunication import USBCommunication
 
 data = []
 config: Config = read_config("client/config.yaml")
@@ -63,9 +63,8 @@ def restart_button() -> None:
         interface.frequency_label_y.grid(row=5, column=5, columnspan=4)
         interface.frequency_label_z.grid(row=5, column=9, columnspan=4)
 
-        usb_communication.connection.flush()
-
         start_button()
+
 
 def usb_thread() -> None:
     """

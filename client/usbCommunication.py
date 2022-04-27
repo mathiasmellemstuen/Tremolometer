@@ -87,7 +87,6 @@ class USBCommunication:
         @param self Pointer to self.
         """
         self.connection.flush()
-        # self.connection.write(str(self.config["maaletid"]).encode())
         self.connection.write(f'{chr(self.config["maaletid"] + 34)}'.encode())
 
     def send_exit_signal(self) -> None:

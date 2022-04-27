@@ -74,6 +74,7 @@ int main(void) {
     //waitForHandshake();
 
     while (1) {
+        bufferIndex = 0;
         // Wait for start signal and get the measurement time.
         sleep_ms(1000);
         uint16_t runningTime = waitForStartSignal() * 1000;
@@ -107,7 +108,7 @@ int main(void) {
             }
         }
         // Send the remaining data
-        sendData(sensorData, BUFFER_SIZE);
+        // sendData(sensorData, BUFFER_SIZE);
     }
 
     return 0;

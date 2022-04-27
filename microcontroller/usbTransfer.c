@@ -40,17 +40,16 @@ void sendData(struct Data* data, int n) {
 }
 
 int16_t waitForStartSignal() {
-
     while(true) {
         stdio_init_all();
         char character = getchar() - 32;
 
-        if(character >= 2) { // Start signal
-            return character;
+        if(character >= 2) {        // Start signal
+            return character - 2;
         } else if(character == 0) { // Exit signal
             waitForStartSignal();
             return 0;
-        } else if(character == 1) {
+        } else if(character == 1) { // Sync signal
             printf("!");
             fflush(stdout);
         }
@@ -59,7 +58,6 @@ int16_t waitForStartSignal() {
 }
 
 void waitForHandshake() {
-
     while(true) {
         stdio_init_all();
         char character = getchar();
