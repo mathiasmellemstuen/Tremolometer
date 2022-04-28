@@ -146,7 +146,8 @@ def update() -> None:
             device_was_connected = False
             showwarning("Frakoblet", "Tremolometer ble frakoblet")
 
-    # Running once when application have reaceived every measurment from the microcontroller and the microcontroller is finished sending
+    # Running once when application have reaceived every measurment from the microcontroller and the microcontroller is
+    # finished sending
     if measuring and not len(data) == 0 and data[len(data) - 1][0] / 1000 > config["maaletid"]:
         measuring = False
 
@@ -224,7 +225,7 @@ def on_exit() -> None:
 
 
 if __name__ == '__main__':
-    # Creating and startin usb thread
+    # Creating and start usb thread
     data_handler = threading.Thread(target=usb_thread)
     data_handler.start()
 

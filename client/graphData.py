@@ -86,17 +86,25 @@ class GraphData:
             return
 
         if not len(data) == 0:
+            new_data = []
+            for d in data:
+                t_data = list(d)
+                t_data[1] /= 1000
+                t_data[2] /= 1000
+                t_data[3] /= 1000
+                t = tuple(t_data)
+                new_data.append(tuple(t_data))
 
             # Calculating the maximum and minimum value
-            max_value = max([max(element[1:]) for element in data]) * self.padding_value
-            min_value = min([min(element[1:]) for element in data]) * self.padding_value
+            max_value = max([max(element[1:]) for element in new_data]) * self.padding_value
+            min_value = min([min(element[1:]) for element in new_data]) * self.padding_value
 
             # Setting the y-axis to be zoomed in on the range between min_value and max_value
             self.plot.set_ylim(min_value, max_value)
 
             # Looping through all the axes and plotting one line for each one.
-            for i in range(0, len(data[0]) - 1):
-                self.plot.plot([element[0] / 1000 for element in data], [element[i + 1] for element in data],
+            for i in range(0, len(new_data[0]) - 1):
+                self.plot.plot([element[0] / 1000 for element in new_data], [element[i + 1] for element in new_data],
                                color=self.axis_color_and_direction[i][0], label=self.axis_color_and_direction[i][1])
             # Adding a legend to the plot
             self.plot.legend()
