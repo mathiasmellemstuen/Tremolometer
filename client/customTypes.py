@@ -3,13 +3,14 @@ Custom types used in codebase.
 """
 from typing import TypeVar, Any, Tuple
 
+## Define Config as a type
 Config = TypeVar('Config', bound=Any)
-"""!Define Config as a type"""
 
+## Define Data as type
 Data = TypeVar('Data', bound=Tuple[int, int, int, int])
-"""!Define Data as type"""
 
+## Define Plot as type
 Plot = TypeVar('Plot', bound=Any)
-"""!Define Plot as type"""
 
+## Define Widget as type
 Widget = TypeVar('Widget', bound=Any)
