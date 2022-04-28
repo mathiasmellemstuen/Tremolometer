@@ -61,7 +61,7 @@ class GraphData:
         """!
         Clear the plot.
 
-        @params self Pinter to self.
+        @param self Pinter to self.
         """
         self.plot.cla()
         self.plot.set_xlabel(self.x_label)
