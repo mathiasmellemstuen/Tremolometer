@@ -24,7 +24,6 @@ class USBCommunication:
 
         @param self Pointer to self.
         """
-
         ## Holds a serial connection object that represents the serial connection over USB to the microcontroller.
         self.connection = None
 
@@ -81,6 +80,14 @@ class USBCommunication:
         return self.connection is not None
 
     def ping(self) -> tuple[bool, bytes]:
+        """!
+        Ping microcontroller to keep connection alive.
+        Also fetches, and returns, first data message if that is sent as response to ping
+
+        @param self Pointer to self
+
+        @return Tuple containing the status and bytes received.
+        """
         try:
             time.sleep(1)
             self.connection.write("!".encode())
@@ -157,4 +164,12 @@ class USBCommunication:
 
     @staticmethod
     def calc_buffer_size(input_len: int, package_size: int) -> int:
+        """!
+        Calculate the size of the data package (in bites) to read form stdin.
+
+        @param input_len How many measurements one message contains.
+        @param package_size Number of bytes one message is in length.
+
+        @return How many bites a message is.
+        """
         return math.ceil(4 * (((input_len * package_size) + 2) / 3))
