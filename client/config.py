@@ -57,6 +57,10 @@ class Config:
 
     def __setitem__(self, key: str, value: Any) -> None:
         """!
-        
+        Square bracket overloading to set an element in config variable.
+
+        @param self Pointer to self.
+        @param key Element to change.
+        @param value Element value.
         """
         self.config[key] = value
