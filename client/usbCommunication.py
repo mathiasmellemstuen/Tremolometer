@@ -17,6 +17,7 @@ class USBCommunication:
     """!
     Handle USB communication with microcontroller.
     """
+
     def __init__(self, config) -> None:
         """!
         Constructor of the USBCommunication class.
@@ -44,7 +45,8 @@ class USBCommunication:
         for port in serial.tools.list_ports.comports():
             try:
                 full_port = self.connection_port_prefix + port.name
-                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=4, writeTimeout=4, baudrate=115200)
+                temp_connection = serial.Serial(port=full_port, parity=serial.PARITY_ODD, timeout=4, writeTimeout=4,
+                                                baudrate=115200)
                 time.sleep(0.1)
                 temp_connection.flush()
                 temp_connection.write("!".encode())
@@ -88,7 +90,8 @@ class USBCommunication:
                 return True, b'0'
             else:
                 return False, input_data
-        except:
+        except Exception as e:
+            print(e)
             self.connection = None
             return False, b'0'
 
@@ -111,49 +114,46 @@ class USBCommunication:
         try:
             self.connection.flush()
             self.connection.write(" ".encode())
-        except:
+        except Exception as e:
+            print(e)
             print("Could not send stopping signal. Exiting")
 
     def read(self) -> Optional[List[Data]]:
         """!
-        Return the data that is sent form the microcontroller.
+        Read data sent from the microcontroller.
 
         @param self Pointer to self.
 
-        @return A list of the measurement packed in a tuple or None.
+        @return List of the data measurement or None.
         """
         if self.connection is None:
             return None
 
         if self.connection.inWaiting() > 0:
-            num_packages = int(self.config['antallPakker'])
-            input = self.connection.read(self.calc_buffer_size(num_packages, 10))
-            bytes = base64.b64decode(input)
-            data = []
-            for i in range(num_packages):
-                time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
-                x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)
-                y = int.from_bytes(bytes[10 * i + 6: 10 * i + 8], byteorder="big", signed=True)
-                z = int.from_bytes(bytes[10 * i + 8: 10 * i + 10], byteorder="big", signed=True)
-
-                data.append((time, x, y, z))
-            return data
+            return self.read_from_data(self.connection.read(self.calc_buffer_size(self.config['antallPakker'], 10)))
         return None
 
-    def read_from_data(self, buffer) -> Optional[List[Data]]:
+    def read_from_data(self, buffer: bytes) -> Optional[List[Data]]:
+        """!
+        Convert raw data form microcontroller to array of data points.
+
+        @param self Pointer to self.
+        @param buffer Raw data form microcontroller, formatted in base-64.
+
+        @return List of the data measurement.
+        """
         num_packages = int(self.config['antallPakker'])
         input = buffer
         bytes = base64.b64decode(input)
         data = []
         for i in range(num_packages):
-            time = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
+            t = int.from_bytes(bytes[10 * i + 0: 10 * i + 4], byteorder="big", signed=False)
             x = int.from_bytes(bytes[10 * i + 4: 10 * i + 6], byteorder="big", signed=True)
             y = int.from_bytes(bytes[10 * i + 6: 10 * i + 8], byteorder="big", signed=True)
             z = int.from_bytes(bytes[10 * i + 8: 10 * i + 10], byteorder="big", signed=True)
 
-            data.append((time, x, y, z))
+            data.append((t, x, y, z))
         return data
-
 
     @staticmethod
     def calc_buffer_size(input_len: int, package_size: int) -> int:
