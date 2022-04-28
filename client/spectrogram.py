@@ -1,7 +1,6 @@
 """!
 Functions related to plotting, creating and modifying spectrograms.
 """
-from matplotlib.figure import Figure
 from scipy import signal
 from typing import List, Any
 from customTypes import Data, Config
@@ -9,47 +8,50 @@ from customTypes import Data, Config
 import numpy as np
 
 
-def calculate_strongest_spectrogram_frequency(Sxx, frequencies_max):
+def calculate_strongest_spectrogram_frequency(spectrogram: np.ndarray, frequencies_max: int) -> float:
     """!
-    Description here
+    Using the data from a spectrogram to calculate the strongest frequency from the spectrogram.
 
-    @param Sxx
-    @param frequencies_max
+    @param spectrogram 2D-array of values inside the spectrogram.
+    @param frequencies_max The max frequency of the spectrogram.
+    @return Returns the strongest frequency in the provided spectrogram
     """
-    row_sums = [sum(row) for row in Sxx]
+    row_sums = [sum(row) for row in spectrogram]
     max_sum_index = row_sums.index(max(row_sums))
     return (frequencies_max * max_sum_index) / len(row_sums)
 
 
-def mask_spectrogram(Sxx, mask_percentage):
+def mask_spectrogram(spectrogram: np.ndarray, mask_percentage: int) -> np.ndarray:
     """!
-    Description here
+    Masking out lower values of a spectrogram.
 
-    @param Sxx
-    @param mask_percentage
+    @param spectrogram 2D-array of values inside the spectrogram
+    @param mask_percentage Value between 0-1. Percentage of the range of values that will be excluded
+    @return Returns a new 2D-array spectrogram with the lower values masked.
     """
-    max_value = np.amax(Sxx)
+    max_value = np.amax(spectrogram)
 
-    for i in range(len(Sxx) - 1):
-        for j in range(len(Sxx[i]) - 1):
-            if Sxx[i][j] / max_value < mask_percentage:
-                Sxx[i][j] = 0
-    return Sxx
+    for i in range(len(spectrogram) - 1):
+        for j in range(len(spectrogram[i]) - 1):
+            if spectrogram[i][j] / max_value < mask_percentage:
+                spectrogram[i][j] = 0
+    return spectrogram
 
 
-def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Config, cmap_color="hot") -> Any:
+def create_spectrogram_from_data(data: List[Data], figure: Any, config: Config, cmap_color="hot") -> float:
     """!
     Create spectrogram figure for the GUI based on the Data measured.
 
-    @param data Measurement data.
-    @param figure The given matplotlib figure to use as a spectrogram.
-    @param config Configuration dict.
-    @param cmap_color
+    @param data List of data to include in the spectrogram. One dimentional data
+    @param figure The matplotlib figure to draw the spectrogram on.
+    @param config Configuration from the configuration file (config.yaml)
+    @param cmap_color Colormap type of the spectrogram.
+    @return Returns the strongest frequency in the spectrogram
     """
     data_points = np.asarray(data)
     sampling_rate = 1 / 0.025
-    frequencies, time, Sxx = signal.spectrogram(x=data_points, fs=sampling_rate, scaling="spectrum", mode="magnitude",
-                                                nperseg=40, nfft=256)
+    frequencies, time, spectrogram = signal.spectrogram(x=data_points, fs=sampling_rate, scaling="spectrum",
+                                                        mode="magnitude", nperseg=40, nfft=256)
 
     measuring_time = int(config["maaletid"])
     frequencies_min = int(config["frekvens_min"])
@@ -57,13 +59,13 @@ def create_spectrogram_from_data(data: List[Data], figure: Figure, config: Confi
     mask_percentage = int(config["spektrogram_maske"])
 
     # Masking the spectrogram to remove lower unwanted values
-    Sxx = mask_spectrogram(Sxx, mask_percentage=mask_percentage)
+    spectrogram = mask_spectrogram(spectrogram=spectrogram, mask_percentage=mask_percentage)
 
     figure.set_ylim(frequencies_min, frequencies_max)
     figure.set_yticks((list(range(frequencies_min, frequencies_max + 1))))
     figure.set_xlim(0, measuring_time)
     figure.set_xticks((list(range(0, measuring_time + 1))))
-    figure.pcolormesh(time, frequencies, Sxx, antialiased=False, cmap=cmap_color)
+    figure.pcolormesh(time, frequencies, spectrogram, antialiased=False, cmap=cmap_color)
     figure.axes.grid(color='white', linestyle='dashed')
 
-    return calculate_strongest_spectrogram_frequency(Sxx, frequencies_max)
+    return calculate_strongest_spectrogram_frequency(spectrogram, frequencies_max)
