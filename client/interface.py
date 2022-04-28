@@ -57,7 +57,7 @@ class Interface:
         graph_len = int(config['maaletid'])
 
         ## GraphData for plotting data over time
-        self.data = GraphData(2, 1, 11, 1920, 325, self.window, graph_len, y_label="Bevegelse (cm)")
+        self.data = GraphData(2, 1, 11, 1920, 325, self.window, graph_len, y_label="Akselerasjon (cm/s²)")
 
         ## Graph for plotting the frequency over time
         self.frequency = GraphData(4, 1, 11, 1920, 325, self.window, graph_len)
