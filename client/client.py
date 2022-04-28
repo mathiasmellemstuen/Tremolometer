@@ -225,7 +225,7 @@ def on_exit() -> None:
 
 
 if __name__ == '__main__':
-    # Creating and startin usb thread
+    # Creating and start usb thread
     data_handler = threading.Thread(target=usb_thread)
     data_handler.start()
 
