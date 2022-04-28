@@ -1,5 +1,9 @@
 .DS_STORE
 .idea
+build/
+dist/
+client/dist
+client/build
 microcontroller/build
 microcontroller/cmake-build-debug
 client/__pycache__
@@ -7,3 +11,4 @@ doc/
 venv/
 *.bak
 *.log
+*.spec
