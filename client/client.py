@@ -19,7 +19,7 @@ import numpy as np
 data = []
 
 ## Dict of data from the configuration file (config.yaml).
-config = Config("client/config.yaml")
+config = Config("config.yaml")
 
 ## Initialization of USB Communication connection to the microcontroller.
 usb_communication: USBCommunication = USBCommunication(config)

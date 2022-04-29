@@ -4,6 +4,22 @@ Handling reading and writing data in the configuration yaml file (config.yaml).
 from typing import Any
 
 import yaml
+import sys
+import os
+
+
+def path_to_resource_path(relative_path: str) -> str:
+    """!
+    Fixing relative paths when building this code to an executable with pyinstaller.
+
+    @param relative_path The relative path to apply fix.
+
+    @return Returns the new relative path that works both for a normal python call of the script and pyinstaller
+    executable.
+    """
+
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 
 class Config:
@@ -19,7 +35,7 @@ class Config:
         @param path Config file path.
         """
         self.config = dict()
-        self.path = path
+        self.path = path_to_resource_path(path)
         self.read()
 
     def read(self) -> None:
