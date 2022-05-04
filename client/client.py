@@ -115,7 +115,7 @@ def extend_data(new_data: Optional[List[Data]]) -> None:
     if new_data is not None:
         for d in new_data:
             if d[1] == 0 and d[2] == 0 and d[3] == 0:
-                del d
+                new_data.remove(d)
 
         data.extend(new_data)
 
