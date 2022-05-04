@@ -15,7 +15,8 @@ void initAccel(i2c_inst_t *i2c, enum Mode mode) {
     uint8_t buf[2];
     // Turn normal mode and 1.344kHz data rate on
     buf[0] = CTRL_REG1;
-    buf[1] = 0x97;
+    buf[1] = 0x47;
+    //buf[1] = 0x97;
     i2c_write_blocking(i2c, ADDRESS, buf, 2, false);
 
     // Turn self test
