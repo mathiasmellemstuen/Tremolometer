@@ -4,6 +4,7 @@ Functions related to plotting, creating and modifying spectrograms.
 from scipy import signal
 from typing import List, Any
 from customTypes import Data, Config
+from graphData import GraphData
 
 import numpy as np
 
@@ -58,6 +59,10 @@ def create_spectrogram_from_data(data: List[Data], figure: Any, config: Config, 
     frequencies_max = int(config["frekvens_maks"])
     mask_percentage = int(config["spektrogram_maske"])
 
+    frequencies, time, spectrogram = signal.spectrogram(data_points, sampling_rate,
+                                                        scaling="spectrum", mode="magnitude",
+                                                        **dict(config['spectogram_grid_style']))
+
     # Masking the spectrogram to remove lower unwanted values
     spectrogram = mask_spectrogram(spectrogram=spectrogram, mask_percentage=mask_percentage)
 
@@ -66,6 +71,6 @@ def create_spectrogram_from_data(data: List[Data], figure: Any, config: Config, 
     figure.set_xlim(0, measuring_time)
     figure.set_xticks((list(range(0, measuring_time + 1))))
     figure.pcolormesh(time, frequencies, spectrogram, antialiased=False, cmap=cmap_color)
-    figure.axes.grid(color='white', linestyle='dashed')
+    figure.axes.grid(**GraphData.grid_style)
 
     return calculate_strongest_spectrogram_frequency(spectrogram, frequencies_max)

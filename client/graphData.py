@@ -12,6 +12,13 @@ class GraphData:
     """!
     Container class for graph data. Used to display the raw data and the frequency.
     """
+    ## Static variable to store grid configuration
+    grid_style = {
+        'color': 'gray',
+        'linestyle': '-.',
+        'linewidth': 0.5
+    }
+
     def __init__(self, row: int, column: int, column_span: int,
                  fig_size_x: int, fig_size_y: int, window: Tk, x_axis_max: int,
                  x_axis_min=0, x_axis_step=1,
@@ -34,7 +41,7 @@ class GraphData:
         """
         self.figure = Figure(figsize=(fig_size_x / 96, fig_size_y / 96), dpi=96)
         self.plot = self.figure.add_subplot(111, xlabel=x_label, ylabel=y_label)
-        self.plot.grid(color='gray', linestyle='dashed')
+        self.plot.grid(**self.grid_style)
         self.figure.tight_layout()
         self.canvas = FigureCanvasTkAgg(self.figure, master=window)
         self.widget = self.canvas.get_tk_widget()
@@ -70,7 +77,7 @@ class GraphData:
         self.plot.set_xlim([self.x_axis_min, self.x_axis_max])
         self.plot.set_xticks(list(range(0, self.x_axis_max + 1))[0::self.x_axis_step])
 
-        self.plot.grid(color='gray', linestyle='dashed')
+        self.plot.grid(**self.grid_style)
 
     def draw(self, data: List[Data] or List[tuple[int, int]]) -> None:
         """!
