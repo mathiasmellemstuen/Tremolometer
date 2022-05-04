@@ -22,7 +22,7 @@ def calculate_strongest_spectrogram_frequency(spectrogram: np.ndarray, frequenci
     return (frequencies_max * max_sum_index) / len(row_sums)
 
 
-def mask_spectrogram(spectrogram: np.ndarray, mask_percentage: int) -> np.ndarray:
+def mask_spectrogram(spectrogram: np.ndarray, mask_percentage: float) -> np.ndarray:
     """!
     Masking out lower values of a spectrogram.
 
@@ -51,8 +51,6 @@ def create_spectrogram_from_data(data: List[Data], figure: Any, config: Config, 
     """
     data_points = np.asarray(data)
     sampling_rate = 1 / 0.025
-    frequencies, time, spectrogram = signal.spectrogram(x=data_points, fs=sampling_rate, scaling="spectrum",
-                                                        mode="magnitude", nperseg=40, nfft=256)
 
     measuring_time = int(config["maaletid"])
     frequencies_min = int(config["frekvens_min"])
@@ -64,7 +62,7 @@ def create_spectrogram_from_data(data: List[Data], figure: Any, config: Config, 
                                                         **dict(config['spectogram_grid_style']))
 
     # Masking the spectrogram to remove lower unwanted values
-    spectrogram = mask_spectrogram(spectrogram=spectrogram, mask_percentage=mask_percentage)
+    spectrogram = mask_spectrogram(spectrogram, mask_percentage)
 
     figure.set_ylim(frequencies_min, frequencies_max)
     figure.set_yticks((list(range(frequencies_min, frequencies_max + 1))))
