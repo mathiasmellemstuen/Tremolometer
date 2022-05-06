@@ -4,7 +4,7 @@
 
 ### Install compiler
 ```bash
-$ brew tap ArmMbed/homebrew-formula
+$ brew tap ArmMbed/homebrew-formulae
 $ brew install arm-none-eabi-gcc
 ```
 
