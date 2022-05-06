@@ -2,5 +2,4 @@
 
 brew install python@3.9
 
-cd Tremolometer/
-pip3 intall -r requirements.txt
+pip3 install -r requirements.txt
