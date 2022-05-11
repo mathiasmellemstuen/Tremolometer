@@ -59,7 +59,7 @@ def create_spectrogram_from_data(data: List[Data], figure: Any, config: Config, 
 
     frequencies, time, spectrogram = signal.spectrogram(data_points, sampling_rate,
                                                         scaling="spectrum", mode="magnitude",
-                                                        **dict(config['spectogram_grid_style']))
+                                                        **dict(config['spectogram']))
 
     # Masking the spectrogram to remove lower unwanted values
     spectrogram = mask_spectrogram(spectrogram, mask_percentage)

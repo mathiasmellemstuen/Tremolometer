@@ -2,8 +2,8 @@ antallPakker: 64
 frekvens_maks: 20
 frekvens_min: 0
 maaletid: 20
-spektrogram_maske: 0
-spectogram_grid_style:
-  nperseg: 64
+spectogram:
   nfft: 256
   noverlap: 63
+  nperseg: 64
+spektrogram_maske: 0
