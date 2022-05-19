@@ -177,7 +177,7 @@ class Interface:
         """
         self.connection_label.configure(text=text, foreground=foreground)
 
-    def finished_ui(self, frequency_all, frequency_x, frequency_y, frequency_z) -> None:
+    def finished_ui(self, frequency_all: float, frequency_x: float, frequency_y: float, frequency_z: float) -> None:
         """!
         Changing the state of the user interface to finished state. This is displaying restart button and changing labels to contain measured frequencies.
 
@@ -231,7 +231,7 @@ class Interface:
         self.frequency_y.clear()
         self.frequency_z.clear()
 
-    def draw_labels(self):
+    def draw_labels(self) -> None:
         """!
         Drawing all labels in the user interface
 

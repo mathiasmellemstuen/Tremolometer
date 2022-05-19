@@ -54,7 +54,7 @@ class GraphData:
         self.x_axis_max = x_axis_max
         self.x_axis_step = x_axis_step
 
-    def set_x_axis_max(self, new_x_axis_max) -> None:
+    def set_x_axis_max(self, new_x_axis_max: int) -> None:
         """!
         Set a new max x-axis value.
 
